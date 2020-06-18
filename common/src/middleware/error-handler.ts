@@ -16,7 +16,7 @@ export const errorHandler = (
 
     // log out error
     console.error({
-        message: 'Something went wrong..',
+        message: 'Something went wrong.',
         err,
     });
 
