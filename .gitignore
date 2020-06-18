@@ -1,0 +1,8 @@
+dist
+node_modules
+.env
+yarn-error.log
+.eslintcache
+.build
+coverage
+.DS_Store
