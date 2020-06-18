@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: client
-          image: briancsingereb/client
+          image: bsnpm/client
           # image: us.gcr.io/ticketing-dev-278510/client
 ---
 apiVersion: v1

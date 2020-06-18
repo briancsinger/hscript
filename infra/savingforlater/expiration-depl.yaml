@@ -15,14 +15,14 @@ spec:
       containers:
         - name: expiration
           # image: us.gcr.io/ticketing-dev-278510/expiration
-          image: briancsingereb/expiration
+          image: bsnpm/expiration
           env:
             - name: NATS_CLIENT_ID
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
             - name: NATS_URL
-              value: "http://nats-srv:4222"
+              value: 'http://nats-srv:4222'
             - name: NATS_CLUSTER_ID
               value: ticketing
             - name: REDIS_HOST

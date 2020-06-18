@@ -4,58 +4,56 @@ deploy:
   kubectl:
     manifests:
       - ./infra/k8s/*
+      - ./infra/k8s-dev/*
 build:
-  # local:
-  #   push: false
-  googleCloudBuild:
-    projectId: ticketing-dev-278510
+  local:
+    push: false
   artifacts:
-    # - image: briancsingereb/auth
-    - image: us.gcr.io/ticketing-dev-278510/auth
+    - image: hscript/auth
       context: auth
       docker:
         dockerfile: Dockerfile
       sync:
         manual:
-          - src: "src/**/*.ts"
+          - src: 'src/**/*.ts'
             dest: .
-    - image: us.gcr.io/ticketing-dev-278510/client
-      context: client
-      docker:
-        dockerfile: Dockerfile
-      sync:
-        manual:
-          - src: "**/*.js"
-            dest: .
-    - image: us.gcr.io/ticketing-dev-278510/tickets
-      context: tickets
-      docker:
-        dockerfile: Dockerfile
-      sync:
-        manual:
-          - src: "src/**/*.ts"
-            dest: .
-    - image: us.gcr.io/ticketing-dev-278510/orders
-      context: orders
-      docker:
-        dockerfile: Dockerfile
-      sync:
-        manual:
-          - src: "src/**/*.ts"
-            dest: .
-    - image: us.gcr.io/ticketing-dev-278510/expiration
-      context: expiration
-      docker:
-        dockerfile: Dockerfile
-      sync:
-        manual:
-          - src: "src/**/*.ts"
-            dest: .
-    - image: us.gcr.io/ticketing-dev-278510/payments
-      context: payments
-      docker:
-        dockerfile: Dockerfile
-      sync:
-        manual:
-          - src: "src/**/*.ts"
-            dest: .
+    # - image: hscript/client
+    #   context: client
+    #   docker:
+    #     dockerfile: Dockerfile
+    #   sync:
+    #     manual:
+    #       - src: '**/*.js'
+    #         dest: .
+    # - image: hscript/tickets
+    #   context: tickets
+    #   docker:
+    #     dockerfile: Dockerfile
+    #   sync:
+    #     manual:
+    #       - src: 'src/**/*.ts'
+    #         dest: .
+    # - image: hscript/orders
+    #   context: orders
+    #   docker:
+    #     dockerfile: Dockerfile
+    #   sync:
+    #     manual:
+    #       - src: 'src/**/*.ts'
+    #         dest: .
+    # - image: hscript/expiration
+    #   context: expiration
+    #   docker:
+    #     dockerfile: Dockerfile
+    #   sync:
+    #     manual:
+    #       - src: 'src/**/*.ts'
+    #         dest: .
+    # - image: hscript/payments
+    #   context: payments
+    #   docker:
+    #     dockerfile: Dockerfile
+    #   sync:
+    #     manual:
+    #       - src: 'src/**/*.ts'
+    #         dest: .
