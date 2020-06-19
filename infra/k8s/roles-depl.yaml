@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-depl
+  name: roles-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth
+      app: roles
   template:
     metadata:
       labels:
-        app: auth
+        app: roles
     spec:
       containers:
-        - name: auth
-          image: hscript/auth
+        - name: roles
+          image: hscript/roles
           env:
             - name: MONGO_URI
-              value: 'mongodb://auth-mongo-srv:27017/auth'
+              value: "mongodb://roles-mongo-srv:27017/roles"
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
@@ -27,12 +27,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-srv
+  name: roles-srv
 spec:
   selector:
-    app: auth
+    app: roles
   ports:
-    - name: auth
+    - name: roles
       protocol: TCP
       port: 3000
       targetPort: 3000
