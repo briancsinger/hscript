@@ -1,35 +1,52 @@
 import express, { Request, Response } from 'express';
-import mongoose from 'mongoose';
 import { body } from 'express-validator';
 
 import {
     requireAuth,
     validateRequest,
     NotFoundError,
+    NotAuthorizedError,
     BadRequestError,
 } from '@bsnpm/common';
-
 import { Role, RoleDescriptionType } from '../../models/role';
 
 const router = express.Router();
-router.post(
-    '/api/roles',
+
+/**
+ * PUT roles/:id
+ *
+ * Name is required.
+ *
+ * If descriptionItems or skills are provided they'll replace existing descriptionItems/skills.
+ * If descriptionItems or skills are not provided they will not be updated on the role.
+ *
+ * In order to clear out descriptionItems or skills, pass an empty array
+ */
+router.put(
+    '/api/roles/:id',
     requireAuth,
     [
         body('name')
+            .optional()
             .isString()
             .trim()
             .not()
             .isEmpty()
-            .withMessage('Valid name must be provided'),
+            .withMessage('Role name must be provided'),
         body('questions')
             .optional()
             .custom((items) => Array.isArray(items))
             .withMessage('Questions must be an array'),
+        body('questions.*.text')
+            .isString()
+            .withMessage('Question text must be a string'),
         body('skills')
             .optional()
             .custom((items) => Array.isArray(items))
             .withMessage('Skills must be an array'),
+        body('skills.*.text')
+            .isString()
+            .withMessage('Skills text must be a string'),
         body('descriptionItems')
             .optional()
             .custom((items) => Array.isArray(items))
@@ -55,19 +72,36 @@ router.post(
         const { name, descriptionItems, skills, questions } = req.body;
         const userId = req.currentUser!.id;
 
-        // build role
-        const role = Role.build({
-            createdBy: userId,
-            name,
-            descriptionItems,
-            skills,
-            questions,
-        });
+        const role = await Role.findById(req.params.id);
+
+        if (!role) {
+            throw new NotFoundError();
+        }
+
+        if (role.createdBy !== userId) {
+            throw new NotAuthorizedError();
+        }
+
+        if (name) {
+            role.set({ name });
+        }
+
+        if (descriptionItems) {
+            role.set({ descriptionItems });
+        }
+
+        if (skills) {
+            role.set({ skills });
+        }
+
+        if (questions) {
+            role.set({ questions });
+        }
+
         await role.save();
 
-        // send resp
-        res.status(201).send(role);
+        res.status(200).send(role);
     },
 );
 
-export { router as createRoleRouter };
+export { router as updateRoleRouter };
