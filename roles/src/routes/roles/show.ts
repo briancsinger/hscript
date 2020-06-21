@@ -15,7 +15,7 @@ router.get(
             throw new NotFoundError();
         }
 
-        if (role.createdBy !== req.currentUser!.id) {
+        if (role.createdBy != req.currentUser!.id) {
             throw new NotAuthorizedError();
         }
 

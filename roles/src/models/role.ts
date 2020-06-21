@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
+import { SkillSchema, SkillDoc } from './subdocuments/skill';
+import { QuestionDoc, QuestionSchema } from './subdocuments/question';
+
 enum RoleDescriptionType {
     Text = 'text',
     Link = 'link',
@@ -19,10 +22,16 @@ interface RoleDescriptionText {
 interface RoleDescriptionItems
     extends Array<RoleDescriptionLink | RoleDescriptionText> {}
 
+interface SkillArray extends Array<SkillDoc> {}
+
+interface QuestionArray extends Array<QuestionDoc> {}
+
 interface RoleAttrs {
     createdBy: string;
-    descriptionItems: RoleDescriptionItems;
+    descriptionItems?: RoleDescriptionItems;
     name: string;
+    skills?: SkillArray;
+    questions?: QuestionArray;
 }
 
 interface RoleDoc extends mongoose.Document {
@@ -30,6 +39,8 @@ interface RoleDoc extends mongoose.Document {
     descriptionItems: RoleDescriptionItems;
     name: string;
     version: number;
+    skills?: SkillArray;
+    questions?: QuestionArray;
 }
 
 interface RoleModel extends mongoose.Model<RoleDoc> {
@@ -51,6 +62,8 @@ const RoleSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        skills: [SkillSchema],
+        questions: [QuestionSchema],
     },
     {
         toJSON: {
