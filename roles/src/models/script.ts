@@ -4,11 +4,22 @@ import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 import { SkillSchema, SkillDoc } from './subdocuments/skill';
 import { QuestionDoc, QuestionSchema } from './subdocuments/question';
 
-interface ScriptText {
+enum ScriptItemType {
+    Text = 'text',
+    Question = 'question',
+}
+
+interface ScriptItemText {
+    type: ScriptItemType.Text;
     text: string;
 }
 
-interface ScriptItems extends Array<QuestionDoc | ScriptText> {}
+interface ScriptItemQuestion {
+    type: ScriptItemType.Question;
+    question: QuestionDoc;
+}
+
+interface ScriptItems extends Array<ScriptItemQuestion | ScriptItemText> {}
 
 interface ScriptAttrs {
     createdBy: string;
