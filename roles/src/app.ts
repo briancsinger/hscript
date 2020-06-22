@@ -12,6 +12,7 @@ import { updateRoleRouter } from './routes/roles/update';
 import { getScriptsRouter } from './routes/scripts/list';
 import { createScriptRouter } from './routes/scripts/new';
 import { getScriptRouter } from './routes/scripts/show';
+import { updateScriptRouter } from './routes/scripts/update';
 
 const app = express();
 app.set('trust proxy', true);
@@ -27,6 +28,7 @@ app.use(currentUser);
 app.use(getScriptsRouter);
 app.use(getScriptRouter);
 app.use(createScriptRouter);
+app.use(updateScriptRouter);
 
 app.use(createRoleRouter);
 app.use(getRolesRouter);
