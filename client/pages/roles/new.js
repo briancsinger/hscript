@@ -12,7 +12,7 @@ const NewRole = () => {
             name,
         },
         onSuccess: (role) => {
-            Router.push('/');
+            Router.push('/roles/[roleId]', `/roles/${role.id}`);
         },
     });
 
