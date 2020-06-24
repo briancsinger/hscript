@@ -9,7 +9,7 @@ router.get(
     '/api/roles/:id',
     requireAuth,
     async (req: Request, res: Response) => {
-        const role = await Role.findById(req.params.id);
+        const role = await Role.findById(req.params.id).populate('editors');
 
         if (!role) {
             throw new NotFoundError();

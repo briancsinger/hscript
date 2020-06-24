@@ -41,6 +41,7 @@ interface RoleDoc extends mongoose.Document {
     version: number;
     skills?: SkillArray;
     questions?: QuestionArray;
+    editors: Array<string>;
 }
 
 interface RoleModel extends mongoose.Model<RoleDoc> {
@@ -64,6 +65,12 @@ const RoleSchema = new mongoose.Schema(
         },
         skills: [SkillSchema],
         questions: [QuestionSchema],
+        editors: [
+            {
+                type: mongoose.Types.ObjectId,
+                ref: 'User',
+            },
+        ],
     },
     {
         toJSON: {
