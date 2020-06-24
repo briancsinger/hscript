@@ -177,5 +177,6 @@ it('publishes an event', async () => {
         })
         .expect(201);
 
+    // ensure natswrapper client publish was called
     expect(natsWrapper.client.publish).toBeCalled();
 });
