@@ -3,8 +3,30 @@ import Router from 'next/router';
 import Link from 'next/link';
 
 import useRequest from '../../hooks/use-request';
+import ScriptItems from '../../component/script/scriptItems';
+import ScriptForm from '../../component/script/itemsForm';
 
-const RoleShow = ({ currentUser, script = {}, role = {} }) => {
+const ScriptShow = ({ currentUser, script = {}, role = {} }) => {
+    const {
+        doRequest: updateScriptRequest,
+        errors: updateScriptRequestErrors,
+    } = useRequest({
+        url: `/api/scripts/${script.id}`,
+        method: 'put',
+        onSuccess: (script) => {
+            Router.push('/scripts/[scriptId]', `/scripts/${script.id}`);
+        },
+    });
+
+    const handleSaveItem = ({ type, value }) => {
+        const scriptItem = {
+            type,
+            text: value,
+        };
+        const updatedScriptItems = [...(script.items || []), scriptItem];
+        updateScriptRequest({ items: updatedScriptItems });
+    };
+
     return (
         <div>
             <Link href="/roles/[roleId]" as={`/roles/${role.id}`}>
@@ -16,11 +38,24 @@ const RoleShow = ({ currentUser, script = {}, role = {} }) => {
             </Link>
             <h3>script name:</h3>
             <h1>{script.name}</h1>
+
+            {updateScriptRequestErrors}
+
+            <div className="card my-4">
+                <h4 className="card-header bg-light">Script items:</h4>
+                <div className="card-body">
+                    <ScriptItems items={script.items} />
+                </div>
+
+                <div className="card-footer">
+                    <ScriptForm onSave={handleSaveItem} />
+                </div>
+            </div>
         </div>
     );
 };
 
-RoleShow.getInitialProps = async (context, client) => {
+ScriptShow.getInitialProps = async (context, client) => {
     const { roleId, scriptId } = context.query;
     try {
         const { data: script } = await client.get(`/api/scripts/${scriptId}`);
@@ -31,4 +66,4 @@ RoleShow.getInitialProps = async (context, client) => {
     }
 };
 
-export default RoleShow;
+export default ScriptShow;
