@@ -40,13 +40,16 @@ router.post(
             throw new NotAuthorizedError();
         }
 
-        const user = await User.findOne({ email });
+        const newEditor = await User.findOne({ email });
 
-        if (!user) {
+        if (!newEditor) {
             throw new BadRequestError('User not found');
         }
+        if (role.editors.includes(newEditor.id)) {
+            throw new BadRequestError(`${email} is already an editor`);
+        }
 
-        role.editors.push(user.id);
+        role.editors.push(newEditor.id);
         await role.save();
 
         res.status(200).send(role);
