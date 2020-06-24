@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 import { app } from './app';
 import { natsWrapper } from './nats-wrapper';
+import { UserCreatedListener } from './events/listeners/user-created-listener';
 
 const start = async () => {
     console.log('rolling with the roles service!');
@@ -29,7 +30,7 @@ const start = async () => {
             process.env.NATS_URL,
         );
 
-        // new TicketCreatedListener(natsWrapper.client).listen();
+        new UserCreatedListener(natsWrapper.client).listen();
         // new TicketUpdatedListener(natsWrapper.client).listen();
         // new ExpirationCompleteListener(natsWrapper.client).listen();
         // new PaymentCreatedListener(natsWrapper.client).listen();

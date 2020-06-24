@@ -1,8 +1,6 @@
 import Link from 'next/link';
 
 const LandingPage = ({ currentUser, roles }) => {
-    console.log({ roles });
-
     const roleList = roles.map((role) => {
         return (
             <tr key={role.id}>

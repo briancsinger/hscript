@@ -27,7 +27,7 @@ RoleShow.getInitialProps = async (context, client) => {
         const { data: role } = await client.get(`/api/roles/${script.role}`);
         return { script, role };
     } catch (e) {
-        console.log(e);
+        console.error(e);
     }
 };
 

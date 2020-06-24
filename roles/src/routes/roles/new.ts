@@ -10,7 +10,7 @@ import {
 } from '@bsnpm/common';
 
 import { Role, RoleDescriptionType } from '../../models/role';
-import { RoleCreatedPublisher } from '../../events/role-created-publisher';
+import { RoleCreatedPublisher } from '../../events/publishers/role-created-publisher';
 import { natsWrapper } from '../../nats-wrapper';
 
 const router = express.Router();

@@ -8,7 +8,6 @@ export default ({ descriptionItems = [] }) => {
     );
 
     const renderTextItem = (item, index) => {
-        console.log({ item, index });
         return <p>{item.text}</p>;
     };
     const renderItem = (item, index) => {
@@ -25,8 +24,6 @@ export default ({ descriptionItems = [] }) => {
     const itemsList = descriptionItems.map((item, index) => (
         <div key={index}>{renderItem(item, index)}</div>
     ));
-
-    console.log(itemsList);
 
     return <div>{itemsList}</div>;
 };

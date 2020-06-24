@@ -1,8 +1,6 @@
 import Router from 'next/router';
 
 const OrdersPage = ({ currentUser, orders }) => {
-    console.log({ orders });
-
     const orderList = orders.map((order) => {
         return (
             <tr key={order.id}>

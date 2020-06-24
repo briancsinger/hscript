@@ -17,12 +17,20 @@ spec:
           image: hscript/auth
           env:
             - name: MONGO_URI
-              value: 'mongodb://auth-mongo-srv:27017/auth'
+              value: "mongodb://auth-mongo-srv:27017/auth"
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
                   name: jwt-secret
                   key: JWT_KEY
+            - name: NATS_URL
+              value: "https://nats-srv:4222"
+            - name: NATS_CLUSTER_ID
+              value: organization
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
 ---
 apiVersion: v1
 kind: Service
