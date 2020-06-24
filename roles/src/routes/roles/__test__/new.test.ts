@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 
 import { app } from '../../../app';
 import { Role, RoleDescriptionType } from '../../../models/role';
+import { natsWrapper } from '../../../nats-wrapper';
 
 it('can only be accessed if the user is signed in', async () => {
     const response = await request(app).post('/api/roles').send({}).expect(401);
@@ -167,4 +168,15 @@ it('creates a role with valid paramaters', async () => {
     expect(roles[0].questions![0].text).toEqual(questions[0].text);
 });
 
-it.todo('Publishes an event');
+it('publishes an event', async () => {
+    const { body } = await request(app)
+        .post('/api/roles')
+        .set('Cookie', global.signin())
+        .send({
+            name: 'name',
+        })
+        .expect(201);
+
+    // ensure natswrapper client publish was called
+    expect(natsWrapper.client.publish).toBeCalled();
+});

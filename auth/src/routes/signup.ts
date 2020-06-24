@@ -6,6 +6,8 @@ import { BadRequestError, validateRequest } from '@bsnpm/common';
 
 import { User } from '../models/user';
 import { Organization } from '../models/organization';
+import { UserCreatedPublisher } from '../events/user-created-publisher';
+import { natsWrapper } from '../nats-wrapper';
 
 const router = express.Router();
 
@@ -24,7 +26,12 @@ router.post(
         validateRequest,
     ],
     async (req: Request, res: Response) => {
-        const { email, name, organizationName = '', password } = req.body;
+        const {
+            email,
+            name,
+            organizationName = 'My Organization',
+            password,
+        } = req.body;
 
         // Check for existing user
         const existingUser = await User.findOne({ email });
@@ -46,6 +53,18 @@ router.post(
         // save
         await organization.save();
         await user.save();
+
+        // Publish an event
+        await new UserCreatedPublisher(natsWrapper.client).publish({
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            organization: {
+                id: organization.id,
+                name: organization.name,
+            },
+            version: user.version,
+        });
 
         // generate jwt and store it on the session
         const userJwt = jwt.sign(

@@ -137,9 +137,24 @@ it('returns a 400 if the descriptionItems are invalid', async () => {
             ],
         })
         .expect(400);
+
+    // empty string text
+    await request(app)
+        .put(`/api/roles/${response.body.id}`)
+        .set('Cookie', cookie)
+        .send({
+            name: 'Role',
+            descriptionItems: [
+                {
+                    type: 'text',
+                    url: '  ',
+                },
+            ],
+        })
+        .expect(400);
 });
 
-it('returns a 400 if the skills are invalid', async () => {
+it.only('returns a 400 if the skills are invalid', async () => {
     const cookie = global.signin();
     const response = await request(app)
         .post(`/api/roles`)
@@ -163,6 +178,16 @@ it('returns a 400 if the skills are invalid', async () => {
         .send({
             name: 'Role',
             skills: [{ text: [] }],
+        })
+        .expect(400);
+
+    // skills.*.text is empty string
+    await request(app)
+        .put(`/api/roles/${response.body.id}`)
+        .set('Cookie', cookie)
+        .send({
+            name: 'Role',
+            skills: [{ text: '  ' }],
         })
         .expect(400);
 });
@@ -191,6 +216,16 @@ it('returns a 400 if the questions are invalid', async () => {
         .send({
             name: 'Role',
             questions: [{ text: [] }],
+        })
+        .expect(400);
+
+    // questions.*.text is an empty string
+    await request(app)
+        .put(`/api/roles/${response.body.id}`)
+        .set('Cookie', cookie)
+        .send({
+            name: 'Role',
+            questions: [{ text: ' ' }],
         })
         .expect(400);
 });

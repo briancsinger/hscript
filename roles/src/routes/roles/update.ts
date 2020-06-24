@@ -38,6 +38,8 @@ router.put(
             .custom((items) => Array.isArray(items))
             .withMessage('Questions must be an array'),
         body('questions.*.text')
+            .optional()
+            .trim()
             .isString()
             .withMessage('Question text must be a string'),
         body('skills')
@@ -45,6 +47,8 @@ router.put(
             .custom((items) => Array.isArray(items))
             .withMessage('Skills must be an array'),
         body('skills.*.text')
+            .optional()
+            .trim()
             .isString()
             .withMessage('Skills text must be a string'),
         body('descriptionItems')

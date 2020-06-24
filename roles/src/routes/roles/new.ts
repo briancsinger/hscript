@@ -10,6 +10,8 @@ import {
 } from '@bsnpm/common';
 
 import { Role, RoleDescriptionType } from '../../models/role';
+import { RoleCreatedPublisher } from '../../events/publishers/role-created-publisher';
+import { natsWrapper } from '../../nats-wrapper';
 
 const router = express.Router();
 router.post(
@@ -64,6 +66,14 @@ router.post(
             questions,
         });
         await role.save();
+
+        // Publish an event
+        await new RoleCreatedPublisher(natsWrapper.client).publish({
+            id: role.id,
+            createdBy: role.createdBy,
+            name: role.name,
+            version: role.version,
+        });
 
         // send resp
         res.status(201).send(role);

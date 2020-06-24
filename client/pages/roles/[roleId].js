@@ -70,7 +70,6 @@ const RoleShow = ({ currentUser, role, scripts }) => {
     };
 
     const handleSaveItem = ({ type, value }) => {
-        console.log({ type, value });
         const newDescriptionItem = {
             type,
             [type === 'link' ? 'url' : 'text']: value,
@@ -145,7 +144,7 @@ const RoleShow = ({ currentUser, role, scripts }) => {
                         <div className="form-group">
                             <div className="input-group">
                                 <textarea
-                                    placeholder="script name"
+                                    placeholder="skill"
                                     value={skillText}
                                     onChange={(e) =>
                                         setSkillText(e.target.value)
@@ -161,7 +160,6 @@ const RoleShow = ({ currentUser, role, scripts }) => {
                                 </div>
                             </div>
                         </div>
-                        {createScriptRequestErrors}
                     </form>
                 </div>
             </div>
@@ -181,7 +179,7 @@ const RoleShow = ({ currentUser, role, scripts }) => {
                         <div className="form-group">
                             <div className="input-group">
                                 <textarea
-                                    placeholder="script name"
+                                    placeholder="question"
                                     value={questionText}
                                     onChange={(e) =>
                                         setQuestionText(e.target.value)
@@ -197,7 +195,6 @@ const RoleShow = ({ currentUser, role, scripts }) => {
                                 </div>
                             </div>
                         </div>
-                        {createScriptRequestErrors}
                     </form>
                 </div>
             </div>
@@ -251,7 +248,6 @@ RoleShow.getInitialProps = async (context, client) => {
     const { roleId } = context.query;
     const { data: roleData } = await client.get(`/api/roles/${roleId}`);
     const { data: scripts } = await client.get(`/api/roles/${roleId}/scripts`);
-    console.log({ scripts });
 
     return { role: roleData, scripts };
 };
