@@ -16,8 +16,7 @@ const router = express.Router();
  * PUT scripts/:id
  */
 router.put(
-    // NB: don't need ethe roleId here, so should it it be shortened?
-    '/api/roles/:roleId/scripts/:scriptId',
+    '/api/scripts/:scriptId',
     requireAuth,
     [
         body('name').optional().isString().withMessage('Name is invalid'),

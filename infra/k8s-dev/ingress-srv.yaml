@@ -18,7 +18,7 @@ spec:
             backend:
               serviceName: roles-srv
               servicePort: 3000
-          - path: /api/roles/?(.*)/?(.*)
+          - path: /api/scripts/?(.*)
             backend:
               serviceName: roles-srv
               servicePort: 3000
@@ -34,7 +34,7 @@ spec:
           #   backend:
           #     serviceName: orders-srv
           #     servicePort: 3000
-          # - path: /?(.*)
-          #   backend:
-          #     serviceName: client-srv
-          #     servicePort: 3000
+          - path: /?(.*)
+            backend:
+              serviceName: client-srv
+              servicePort: 3000

@@ -14,8 +14,7 @@ spec:
     spec:
       containers:
         - name: client
-          image: bsnpm/client
-          # image: us.gcr.io/ticketing-dev-278510/client
+          image: hscript/client
 ---
 apiVersion: v1
 kind: Service
