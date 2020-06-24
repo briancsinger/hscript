@@ -25,11 +25,7 @@ it('returns 401 if the user does not own the script', async () => {
     await script.save();
 
     const response = await request(app)
-        .get(
-            `/api/roles/${mongoose.Types.ObjectId().toHexString()}/scripts/${
-                script.id
-            }`,
-        )
+        .get(`/api/scripts/${script.id}`)
         .set('Cookie', global.signin())
         .expect(401);
 });
@@ -46,11 +42,7 @@ it('returns the script if the script is found', async () => {
     await script.save();
 
     const response = await request(app)
-        .get(
-            `/api/roles/${mongoose.Types.ObjectId().toHexString()}/scripts/${
-                script.id
-            }`,
-        )
+        .get(`/api/scripts/${script.id}`)
         .set('Cookie', global.signin(mockUserId))
         .expect(200);
 

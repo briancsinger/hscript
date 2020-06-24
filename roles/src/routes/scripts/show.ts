@@ -7,8 +7,7 @@ import { Script } from '../../models/script';
 
 const router = express.Router();
 router.get(
-    // NB: don't need roleId, so should we shorten this route?
-    '/api/roles/:roleId/scripts/:scriptId',
+    '/api/scripts/:scriptId',
     requireAuth,
     async (req: Request, res: Response) => {
         const script = await Script.findById(req.params.scriptId);

@@ -32,17 +32,15 @@ const buildScript = async ({
 };
 
 it('can only be accessed if the user is signed in', async () => {
-    return await request(app).put('/api/roles/1/scripts/1').expect(401);
+    return await request(app).put('/api/scripts/1').expect(401);
 });
 
 it('returns an error if invalid name is provided', async () => {
-    const roleId = mongoose.Types.ObjectId().toHexString();
     const myUserId = mongoose.Types.ObjectId().toHexString();
-    const cookie = global.signin(myUserId);
     const script = await buildScript({ createdBy: myUserId });
 
     await request(app)
-        .put(`/api/roles/${roleId}/scripts/${script.id}`)
+        .put(`/api/scripts/${script.id}`)
         .set('Cookie', global.signin())
         .send({
             name: [],
@@ -50,7 +48,7 @@ it('returns an error if invalid name is provided', async () => {
         .expect(400);
 
     await request(app)
-        .put(`/api/roles/${roleId}/scripts/${script.id}`)
+        .put(`/api/scripts/${script.id}`)
         .set('Cookie', global.signin())
         .send({
             name: '  ',
@@ -59,13 +57,11 @@ it('returns an error if invalid name is provided', async () => {
 });
 
 it('returns an error if invalid items is provided', async () => {
-    const roleId = mongoose.Types.ObjectId().toHexString();
     const myUserId = mongoose.Types.ObjectId().toHexString();
-    const cookie = global.signin(myUserId);
     const script = await buildScript({ createdBy: myUserId });
 
     await request(app)
-        .put(`/api/roles/${roleId}/scripts/${script.id}`)
+        .put(`/api/scripts/${script.id}`)
         .set('Cookie', global.signin())
         .send({
             items: 'not an array',
@@ -73,7 +69,7 @@ it('returns an error if invalid items is provided', async () => {
         .expect(400);
 
     await request(app)
-        .put(`/api/roles/${roleId}/scripts/${script.id}`)
+        .put(`/api/scripts/${script.id}`)
         .set('Cookie', global.signin())
         .send({
             items: [{ text: [] }],
@@ -81,7 +77,7 @@ it('returns an error if invalid items is provided', async () => {
         .expect(400);
 
     await request(app)
-        .put(`/api/roles/${roleId}/scripts/${script.id}`)
+        .put(`/api/scripts/${script.id}`)
         .set('Cookie', global.signin())
         .send({
             items: [{ skill: '  ' }],
@@ -89,7 +85,7 @@ it('returns an error if invalid items is provided', async () => {
         .expect(400);
 
     await request(app)
-        .put(`/api/roles/${roleId}/scripts/${script.id}`)
+        .put(`/api/scripts/${script.id}`)
         .set('Cookie', global.signin())
         .send({
             items: [{ skill: [] }],
@@ -98,13 +94,12 @@ it('returns an error if invalid items is provided', async () => {
 });
 
 it('returns 401 if the user does not own the script', async () => {
-    const role = await buildRole();
     const myUserId = mongoose.Types.ObjectId().toHexString();
     const cookie = global.signin(myUserId);
     const script = await buildScript();
 
     await request(app)
-        .put(`/api/roles/${role.id}/scripts/${script.id}`)
+        .put(`/api/scripts/${script.id}`)
         .set('Cookie', cookie)
         .send({})
         .expect(401);
@@ -112,7 +107,6 @@ it('returns 401 if the user does not own the script', async () => {
 
 it('updates script with valid params', async () => {
     const myUserId = mongoose.Types.ObjectId().toHexString();
-    const role = await buildRole({ createdBy: myUserId });
     const cookie = global.signin(myUserId);
     const script = await buildScript({
         createdBy: myUserId,
@@ -123,7 +117,7 @@ it('updates script with valid params', async () => {
     const scriptName = 'new name';
 
     const { body } = await request(app)
-        .put(`/api/roles/${role.id}/scripts/${script.id}`)
+        .put(`/api/scripts/${script.id}`)
         .set('Cookie', cookie)
         .send({
             name: scriptName,

@@ -15,13 +15,20 @@ export default ({ url, method, body, onSuccess }) => {
         } catch (err) {
             console.log(err);
             setErrors(
-                <div className="alert alert-danger">
+                <div className="alert alert-danger alert-dismissible fade show my-3">
                     <h4>Oops</h4>
                     <ul>
                         {err.response.data.errors.map((e) => (
                             <li key={e.message}>{e.message}</li>
                         ))}
                     </ul>
+                    <button
+                        type="button"
+                        className="close"
+                        onClick={() => setErrors(null)}
+                    >
+                        <span>&times;</span>
+                    </button>
                 </div>,
             );
         }
