@@ -55,16 +55,6 @@ router.post(
         await user.save();
 
         // Publish an event
-        console.log({
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            organization: {
-                id: organization.id,
-                name: organization.name,
-            },
-            version: user.version,
-        });
         await new UserCreatedPublisher(natsWrapper.client).publish({
             id: user.id,
             email: user.email,
