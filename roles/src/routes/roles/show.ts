@@ -10,12 +10,17 @@ router.get(
     requireAuth,
     async (req: Request, res: Response) => {
         const role = await Role.findById(req.params.id).populate('editors');
+        const currentUserId = req.currentUser!.id;
 
         if (!role) {
             throw new NotFoundError();
         }
 
-        if (role.createdBy != req.currentUser!.id) {
+        const hasAccess =
+            // @ts-ignore
+            role.editors.some((editor) => editor.id === currentUserId) ||
+            role.createdBy == currentUserId;
+        if (!hasAccess) {
             throw new NotAuthorizedError();
         }
 

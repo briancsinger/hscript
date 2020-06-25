@@ -7,6 +7,7 @@ import DescriptionItems from '../../component/role/descriptionItems';
 import DescriptionForm from '../../component/role/descriptionForm';
 
 const RoleShow = ({ currentUser, role, scripts }) => {
+    const [editorEmail, setEditorEmail] = useState('');
     const [scriptName, setScriptName] = useState('');
     const [skillText, setSkillText] = useState('');
     const [questionText, setQuestionText] = useState('');
@@ -26,6 +27,20 @@ const RoleShow = ({ currentUser, role, scripts }) => {
     });
 
     const {
+        doRequest: addEditorRequest,
+        errors: addEditorRequestErrors,
+    } = useRequest({
+        url: `/api/roles/${role.id}/editors`,
+        method: 'post',
+        body: {
+            email: editorEmail,
+        },
+        onSuccess: (script) => {
+            Router.push('/roles/[roleId]', `/roles/${role.id}`);
+        },
+    });
+
+    const {
         doRequest: updateRoleRequest,
         errors: updateRoleRequestErrors,
     } = useRequest({
@@ -39,6 +54,11 @@ const RoleShow = ({ currentUser, role, scripts }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         createScriptRequest();
+    };
+
+    const handleSubmitEditor = (e) => {
+        e.preventDefault();
+        addEditorRequest();
     };
 
     const handleSkillSubmit = (e) => {
@@ -97,6 +117,12 @@ const RoleShow = ({ currentUser, role, scripts }) => {
         );
     });
 
+    const editorList = (role.editors || []).map((editor, index) => (
+        <li className="list-group-item px-0" key={index}>
+            {editor.name} ({editor.email})
+        </li>
+    ));
+
     const skillList = (role.skills || []).map((skill, index) => (
         <li className="list-group-item px-0" key={index}>
             {skill.text}
@@ -117,6 +143,42 @@ const RoleShow = ({ currentUser, role, scripts }) => {
             </div>
 
             {updateRoleRequestErrors}
+
+            <div className="card my-4">
+                <h4 className="card-header bg-light">Editors:</h4>
+
+                <div className="card-body">
+                    <ul className="list-group list-group-flush">
+                        {editorList}
+                    </ul>
+                </div>
+
+                <div className="card-footer">
+                    <p>Add an editor</p>
+                    <form onSubmit={handleSubmitEditor}>
+                        <div className="form-group">
+                            <div className="input-group">
+                                <input
+                                    placeholder="script name"
+                                    value={editorEmail}
+                                    onChange={(e) =>
+                                        setEditorEmail(e.target.value)
+                                    }
+                                    className="form-control"
+                                />
+                                <div className="input-group-append">
+                                    <input
+                                        type="submit"
+                                        className="btn btn-primary"
+                                        value="Add"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        {addEditorRequestErrors}
+                    </form>
+                </div>
+            </div>
 
             <div className="card my-4">
                 <h4 className="card-header bg-light">Role description:</h4>

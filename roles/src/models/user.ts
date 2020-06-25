@@ -64,7 +64,11 @@ userSchema.set('versionKey', 'version');
 userSchema.plugin(updateIfCurrentPlugin);
 
 userSchema.statics.build = (attrs: UserAttrs) => {
-    return new User(attrs);
+    const { id, ...userAttrs } = attrs;
+    return new User({
+        _id: id,
+        ...userAttrs,
+    });
 };
 
 const User = mongoose.model<UserDoc, UserModel>('User', userSchema);

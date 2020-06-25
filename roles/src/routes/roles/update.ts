@@ -82,7 +82,10 @@ router.put(
             throw new NotFoundError();
         }
 
-        if (role.createdBy !== userId) {
+        const hasAccess =
+            role.editors.includes(userId) || role.createdBy == userId;
+
+        if (!hasAccess) {
             throw new NotAuthorizedError();
         }
 
