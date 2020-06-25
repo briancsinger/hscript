@@ -24,7 +24,12 @@ export default ({ currentUser }) => {
                 <a className="navbrand">hscript</a>
             </Link>
             <div className="d-flex justify-content-end">
-                <ul className="nav d-flex align-items-center">{links}</ul>
+                <ul className="nav d-flex align-items-center">
+                    <li key="email" className="nav-item">
+                        {currentUser.email}
+                    </li>
+                    {links}
+                </ul>
             </div>
         </nav>
     );

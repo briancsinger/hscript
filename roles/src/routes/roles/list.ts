@@ -6,8 +6,9 @@ import { Role } from '../../models/role';
 
 const router = express.Router();
 router.get('/api/roles', requireAuth, async (req: Request, res: Response) => {
+    const userId = req.currentUser!.id;
     const roles = await Role.find({
-        createdBy: req.currentUser!.id,
+        $or: [{ createdBy: userId }, { editors: userId }],
     });
 
     res.send(roles);
