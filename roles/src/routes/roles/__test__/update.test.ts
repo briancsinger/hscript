@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 
 import { app } from '../../../app';
 import { Role, RoleDescriptionType } from '../../../models/role';
+import { User } from '../../../models/user';
 
 it('returns a 404 if the provided id does not exist', async () => {
     const id = new mongoose.Types.ObjectId().toHexString();
@@ -154,7 +155,7 @@ it('returns a 400 if the descriptionItems are invalid', async () => {
         .expect(400);
 });
 
-it.only('returns a 400 if the skills are invalid', async () => {
+it('returns a 400 if the skills are invalid', async () => {
     const cookie = global.signin();
     const response = await request(app)
         .post(`/api/roles`)
@@ -230,7 +231,7 @@ it('returns a 400 if the questions are invalid', async () => {
         .expect(400);
 });
 
-it('updates the role provided valid inputs', async () => {
+it('updates the role provided valid inputs and user is owner', async () => {
     const cookie = global.signin();
     const response = await request(app)
         .post(`/api/roles`)
@@ -257,6 +258,53 @@ it('updates the role provided valid inputs', async () => {
     expect(role!.descriptionItems).toHaveLength(1);
     expect(role!.skills).toHaveLength(1);
     expect(role!.questions).toHaveLength(1);
+});
+
+it('updates the role provided valid inputs and user is an editor', async () => {
+    const editorUserId = mongoose.Types.ObjectId().toHexString();
+    const editorUserProps = {
+        name: 'editor',
+        email: 'user@test.com',
+        password: 'password',
+        id: editorUserId,
+        organization: {
+            id: mongoose.Types.ObjectId().toHexString(),
+            name: 'my org',
+        },
+    };
+    const editor = User.build(editorUserProps);
+    await editor.save();
+
+    const ownerId = mongoose.Types.ObjectId().toHexString();
+    const roleProps = {
+        name: 'name',
+        descriptionItems: [],
+        createdBy: ownerId,
+    };
+    const role = Role.build(roleProps);
+    role.editors.push(editor.id);
+    await role.save();
+    console.log(role);
+    const newName = 'new name';
+
+    await request(app)
+        .put(`/api/roles/${role.id}`)
+        .set('Cookie', global.signin(editor.id))
+        .send({
+            name: newName,
+            descriptionItems: [
+                { type: RoleDescriptionType.Link, url: 'https://asdasd.com' },
+            ],
+            skills: [{ text: 'skill1' }],
+            questions: [{ text: 'question1' }],
+        })
+        .expect(200);
+
+    let updatedRole = await Role.findById(role.id);
+    expect(updatedRole!.name).toEqual(newName);
+    expect(updatedRole!.descriptionItems).toHaveLength(1);
+    expect(updatedRole!.skills).toHaveLength(1);
+    expect(updatedRole!.questions).toHaveLength(1);
 });
 
 it("if user does not provide a name it won't update existing name", async () => {
