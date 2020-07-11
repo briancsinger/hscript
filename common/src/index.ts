@@ -17,6 +17,8 @@ export * from './events/ticket-created-event';
 export * from './events/ticket-updated-event';
 export * from './events/types/order-status';
 export * from './events/role-created-event';
+export * from './events/script-created-event';
+export * from './events/script-updated-event';
 export * from './events/user-created-event';
 export * from './events/organization-created-event';
 export * from './events/order-canceled-event';
