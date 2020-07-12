@@ -9,11 +9,13 @@ import { Script } from '../../../models/script';
 const buildRole = async ({
     name = 'role name',
     createdBy = mongoose.Types.ObjectId().toHexString(),
+    editor = mongoose.Types.ObjectId().toHexString(),
 } = {}) => {
     const role = Role.build({
         name,
         createdBy,
     });
+    role.editors.push(editor);
     await role.save();
     return role;
 };
@@ -93,25 +95,46 @@ it('returns an error if invalid items is provided', async () => {
         .expect(400);
 });
 
-it('returns 401 if the user does not own the script', async () => {
-    const myUserId = mongoose.Types.ObjectId().toHexString();
-    const cookie = global.signin(myUserId);
-    const script = await buildScript();
+it("returns 401 if the user does not own the role and isn't an editor", async () => {
+    // const myUserId = mongoose.Types.ObjectId().toHexString();
+    // const cookie = ;
+    const role = await buildRole();
+    const script = await buildScript({ role: role.id });
 
     await request(app)
         .put(`/api/scripts/${script.id}`)
-        .set('Cookie', cookie)
+        .set('Cookie', global.signin())
         .send({})
         .expect(401);
 });
 
-it('updates script with valid params', async () => {
+it('updates script with valid params if user owns the role', async () => {
     const myUserId = mongoose.Types.ObjectId().toHexString();
     const cookie = global.signin(myUserId);
-    const script = await buildScript({
-        createdBy: myUserId,
-        name: 'name',
-    });
+    const role = await buildRole({ createdBy: myUserId });
+    const script = await buildScript({ role: role.id });
+
+    const scriptItems = [{ text: 'text' }];
+    const scriptName = 'new name';
+
+    const { body } = await request(app)
+        .put(`/api/scripts/${script.id}`)
+        .set('Cookie', cookie)
+        .send({
+            name: scriptName,
+            items: scriptItems,
+        })
+        .expect(200);
+
+    expect(body.name).toEqual(scriptName);
+    expect(body.items).toEqual(scriptItems);
+});
+
+it('updates script with valid params if user is editor of the role', async () => {
+    const myUserId = mongoose.Types.ObjectId().toHexString();
+    const cookie = global.signin(myUserId);
+    const role = await buildRole({ editor: myUserId });
+    const script = await buildScript({ role: role.id });
 
     const scriptItems = [{ text: 'text' }];
     const scriptName = 'new name';

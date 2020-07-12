@@ -61,12 +61,7 @@ it('returns scripts for role and current user', async () => {
         createdBy: meUserId,
         role: myRole1.id,
     });
-    // NB: currently the next script should technically not be possible but I'm going to
-    // manually create it to test the protection against listing other people's scripts anyway
-    const notMyScript2 = await buildScript({
-        createdBy: notMeUserId,
-        role: myRole1.id,
-    });
+
     const me = global.signin(meUserId);
 
     const response = await request(app)

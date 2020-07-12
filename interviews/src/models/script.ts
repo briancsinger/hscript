@@ -6,23 +6,6 @@ import { ScriptItems } from '@bsnpm/common';
 import { SkillSchema, SkillDoc } from './subdocuments/skill';
 import { QuestionDoc, QuestionSchema } from './subdocuments/question';
 
-// enum ScriptItemType {
-//     Text = 'text',
-//     Question = 'question',
-// }
-
-// interface ScriptItemText {
-//     type: ScriptItemType.Text;
-//     text: string;
-// }
-
-// interface ScriptItemQuestion {
-//     type: ScriptItemType.Question;
-//     question: QuestionDoc;
-// }
-
-// interface ScriptItems extends Array<ScriptItemQuestion | ScriptItemText> {}
-
 interface ScriptAttrs {
     createdBy: string;
     items?: ScriptItems;

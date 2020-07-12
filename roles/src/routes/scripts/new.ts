@@ -6,10 +6,13 @@ import {
     validateRequest,
     NotFoundError,
     NotAuthorizedError,
+    currentUser,
 } from '@bsnpm/common';
 
+import { ScriptCreatedPublisher } from '../../events/publishers/script-created-publisher';
 import { Role } from '../../models/role';
 import { Script } from '../../models/script';
+import { natsWrapper } from '../../nats-wrapper';
 
 const router = express.Router();
 router.post(
@@ -48,15 +51,18 @@ router.post(
     validateRequest,
     async (req: Request, res: Response) => {
         const { name, items } = req.body;
-        const userId = req.currentUser!.id;
+        const currentUserId = req.currentUser!.id;
 
         const role = await Role.findById(req.params.roleId);
-
         if (!role) {
             throw new NotFoundError();
         }
 
-        if (role.createdBy != req.currentUser!.id) {
+        const hasAccess =
+            role.editors.includes(currentUserId) ||
+            role.createdBy == currentUserId;
+
+        if (!hasAccess) {
             throw new NotAuthorizedError();
         }
 
@@ -68,12 +74,22 @@ router.post(
 
         // build script
         const script = Script.build({
-            createdBy: userId,
+            createdBy: currentUserId,
             role: role.id,
             items,
             name: scriptName,
         });
         await script.save();
+
+        // Publish an event
+        await new ScriptCreatedPublisher(natsWrapper.client).publish({
+            id: script.id,
+            createdBy: script.createdBy,
+            name: script.name,
+            items: script.items,
+            version: script.version,
+            role: script.role,
+        });
 
         // send resp
         res.status(201).send(script);
