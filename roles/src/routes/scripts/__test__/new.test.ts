@@ -9,11 +9,13 @@ import { Script } from '../../../models/script';
 const buildRole = async ({
     name = 'role name',
     createdBy = mongoose.Types.ObjectId().toHexString(),
+    editor = mongoose.Types.ObjectId().toHexString(),
 } = {}) => {
     const role = Role.build({
         name,
         createdBy,
     });
+    role.editors.push(editor);
     await role.save();
     return role;
 };
@@ -88,7 +90,7 @@ it('returns an error if invalid items is provided', async () => {
         .expect(400);
 });
 
-it('returns 401 if the user does not own the role', async () => {
+it('returns 401 if the user does not own the role and is not an editor', async () => {
     const role = await buildRole();
 
     await request(app)
@@ -98,10 +100,31 @@ it('returns 401 if the user does not own the role', async () => {
         .expect(401);
 });
 
-it('creates a script with valid parameters', async () => {
+it('creates a script with valid parameters if the user owns the role', async () => {
     const myUserId = mongoose.Types.ObjectId().toHexString();
     const cookie = global.signin(myUserId);
     const role = await buildRole({ createdBy: myUserId });
+
+    const scriptName = 'scriptName';
+    const scriptItems = [{ text: 'text' }];
+    const { body } = await request(app)
+        .post(`/api/roles/${role.id}/scripts`)
+        .set('Cookie', cookie)
+        .send({
+            name: scriptName,
+            items: scriptItems,
+        })
+        .expect(201);
+
+    expect(body.name).toEqual(scriptName);
+    expect(body.items).toEqual(scriptItems);
+    expect(body.role).toEqual(String(role.id));
+});
+
+it('creates a script with valid parameters if the user is an editor on the role', async () => {
+    const myUserId = mongoose.Types.ObjectId().toHexString();
+    const cookie = global.signin(myUserId);
+    const role = await buildRole({ editor: myUserId });
 
     const scriptName = 'scriptName';
     const scriptItems = [{ text: 'text' }];

@@ -7,8 +7,10 @@ import {
     NotFoundError,
     NotAuthorizedError,
     BadRequestError,
+    currentUser,
 } from '@bsnpm/common';
 import { Script } from '../../models/script';
+import { Role } from '../../models/role';
 
 const router = express.Router();
 
@@ -51,7 +53,7 @@ router.put(
     validateRequest,
     async (req: Request, res: Response) => {
         const { name, items } = req.body;
-        const userId = req.currentUser!.id;
+        const currentUserId = req.currentUser!.id;
 
         const script = await Script.findById(req.params.scriptId);
 
@@ -59,7 +61,16 @@ router.put(
             throw new NotFoundError();
         }
 
-        if (script.createdBy !== userId) {
+        const role = await Role.findById(script.role);
+        if (!role) {
+            throw new NotFoundError();
+        }
+
+        const hasAccess =
+            role.editors.includes(currentUserId) ||
+            role.createdBy == currentUserId;
+
+        if (!hasAccess) {
             throw new NotAuthorizedError();
         }
 

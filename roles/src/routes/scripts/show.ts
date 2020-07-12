@@ -10,13 +10,23 @@ router.get(
     '/api/scripts/:scriptId',
     requireAuth,
     async (req: Request, res: Response) => {
-        const script = await Script.findById(req.params.scriptId);
+        const currentUserId = req.currentUser!.id;
 
+        const script = await Script.findById(req.params.scriptId);
         if (!script) {
             throw new NotFoundError();
         }
 
-        if (script.createdBy != req.currentUser!.id) {
+        const role = await Role.findById(script.role);
+        if (!role) {
+            throw new NotFoundError();
+        }
+
+        const hasAccess =
+            role.editors.includes(currentUserId) ||
+            role.createdBy == currentUserId;
+
+        if (!hasAccess) {
             throw new NotAuthorizedError();
         }
 

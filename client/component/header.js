@@ -25,9 +25,11 @@ export default ({ currentUser }) => {
             </Link>
             <div className="d-flex justify-content-end">
                 <ul className="nav d-flex align-items-center">
-                    <li key="email" className="nav-item">
-                        {currentUser.email}
-                    </li>
+                    {currentUser && (
+                        <li key="email" className="nav-item">
+                            {currentUser.email}
+                        </li>
+                    )}
                     {links}
                 </ul>
             </div>
