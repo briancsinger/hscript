@@ -13,7 +13,6 @@ export * from './middleware/validate-request';
 export * from './events/base-listener';
 export * from './events/base-publisher';
 export * from './events/subjects';
-export * from './events/types/order-status';
 export * from './events/role-created-event';
 export * from './events/script-created-event';
 export * from './events/script-updated-event';
