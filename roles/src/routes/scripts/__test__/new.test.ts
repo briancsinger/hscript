@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import { app } from '../../../app';
 import { Role } from '../../../models/role';
 import { Script } from '../../../models/script';
+import { natsWrapper } from '../../../nats-wrapper';
 
 // HELPERS
 const buildRole = async ({
@@ -142,4 +143,22 @@ it('creates a script with valid parameters if the user is an editor on the role'
     expect(body.role).toEqual(String(role.id));
 });
 
-it.todo('Publishes an event');
+it('Publishes an event', async () => {
+    const myUserId = mongoose.Types.ObjectId().toHexString();
+    const cookie = global.signin(myUserId);
+    const role = await buildRole({ createdBy: myUserId });
+
+    const scriptName = 'scriptName';
+    const scriptItems = [{ text: 'text' }];
+    const { body } = await request(app)
+        .post(`/api/roles/${role.id}/scripts`)
+        .set('Cookie', cookie)
+        .send({
+            name: scriptName,
+            items: scriptItems,
+        })
+        .expect(201);
+
+    // ensure natswrapper client publish was called
+    expect(natsWrapper.client.publish).toBeCalled();
+});
