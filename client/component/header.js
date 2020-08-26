@@ -49,7 +49,7 @@ export default ({ currentUser }) => {
                     <MenuIcon />
                 </IconButton>
                 <Button color="inherit" component={ButtonLink} href={'/'}>
-                    hscript
+                    HSCRIPT
                 </Button>
                 <div className={classes.grow} />
                 {currentUser && <Typography>{currentUser.email}</Typography>}

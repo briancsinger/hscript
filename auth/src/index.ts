@@ -35,7 +35,7 @@ const start = async () => {
 
         // need to exit entire program if NATS connection is lost
         natsWrapper.client.on('close', () => {
-            console.log('NATS connetion closed!');
+            console.log('NATS connetion closed.');
             process.exit();
         });
 
