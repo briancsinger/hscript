@@ -1,6 +1,9 @@
 import axios from 'axios';
 
 export default ({ req }) => {
+    console.log('------------------------------------');
+    console.log(process.env.NODE_ENV);
+    console.log('------------------------------------');
     let baseURL = 'http://www.singer.land';
     if (process.env.NODE_ENV === 'development') {
         baseURL =
