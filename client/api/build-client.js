@@ -1,9 +1,15 @@
 import axios from 'axios';
 
 export default ({ req }) => {
+    let baseURL = 'http://www.singer.land';
+    if (process.env.NODE_ENV === 'development') {
+        baseURL =
+            'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local';
+    }
+
     if (typeof window === 'undefined') {
         return axios.create({
-            baseURL: 'http://www.singer.land',
+            baseURL,
             headers: req.headers,
         });
     }
