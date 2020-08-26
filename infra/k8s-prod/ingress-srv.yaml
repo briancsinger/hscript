@@ -10,21 +10,17 @@ spec:
     - host: www.singer.land
       http:
         paths:
-          - path: /api/payments/?(.*)
-            backend:
-              serviceName: payments-srv
-              servicePort: 3000
           - path: /api/users/?(.*)
             backend:
               serviceName: auth-srv
               servicePort: 3000
-          - path: /api/tickets/?(.*)
+          - path: /api/roles/?(.*)
             backend:
-              serviceName: tickets-srv
+              serviceName: roles-srv
               servicePort: 3000
-          - path: /api/orders/?(.*)
+          - path: /api/scripts/?(.*)
             backend:
-              serviceName: orders-srv
+              serviceName: roles-srv
               servicePort: 3000
           - path: /?(.*)
             backend:
