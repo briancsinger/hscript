@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import SignIn from './splash/splash';
 
 const LandingPage = ({ currentUser, roles }) => {
     const roleList = roles.map((role) => {
@@ -15,18 +16,20 @@ const LandingPage = ({ currentUser, roles }) => {
     });
 
     return (
-        <div>
-            <h2>Roles</h2>
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Link</th>
-                    </tr>
-                </thead>
-                <tbody>{roleList}</tbody>
-            </table>
-        </div>
+        (currentUser && (
+            <div>
+                <h2>Roles</h2>
+                <table className="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>{roleList}</tbody>
+                </table>
+            </div>
+        )) || <SignIn />
     );
 };
 

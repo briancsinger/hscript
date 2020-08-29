@@ -9,6 +9,7 @@ import { errorHandler, NotFoundError } from '@bsnpm/common';
 import { signinRouter } from './routes/signin';
 import { signoutRouter } from './routes/signout';
 import { signupRouter } from './routes/signup';
+import { betaSignupRouter } from './routes/beta-signup';
 
 const app = express();
 app.set('trust proxy', true);
@@ -24,6 +25,7 @@ app.use(currentUserRouter);
 app.use(signinRouter);
 app.use(signoutRouter);
 app.use(signupRouter);
+app.use(betaSignupRouter);
 
 app.all('*', async (req, res) => {
     throw new NotFoundError();

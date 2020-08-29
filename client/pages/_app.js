@@ -1,12 +1,24 @@
 import 'fontsource-roboto';
 
+import React from 'react';
 import Head from 'next/head';
 import buildClient from '../api/build-client';
 import Header from '../component/header';
+import { ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import theme from '../theme/theme';
 
 const AppComponent = ({ Component, pageProps, currentUser }) => {
+    React.useEffect(() => {
+        // Remove the server-side injected CSS.
+        const jssStyles = document.querySelector('#jss-server-side');
+        if (jssStyles) {
+            jssStyles.parentElement.removeChild(jssStyles);
+        }
+    }, []);
+
     return (
-        <div>
+        <React.Fragment>
             <Head>
                 <title>hscript</title>
                 <meta
@@ -14,11 +26,12 @@ const AppComponent = ({ Component, pageProps, currentUser }) => {
                     content="minimum-scale=1, initial-scale=1, width=device-width"
                 />
             </Head>
-            <Header currentUser={currentUser} />
-            <div className="container">
+            <ThemeProvider theme={theme}>
+                {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+                <CssBaseline />
                 <Component currentUser={currentUser} {...pageProps} />
-            </div>
-        </div>
+            </ThemeProvider>
+        </React.Fragment>
     );
 };
 
