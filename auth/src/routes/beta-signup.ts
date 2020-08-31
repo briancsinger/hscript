@@ -23,7 +23,7 @@ router.post(
         // Check for existing user
         const existingBetaUser = await BetaUser.findOne({ email });
         if (existingBetaUser) {
-            res.status(200).send(existingBetaUser);
+            return res.status(200).send(existingBetaUser);
         }
 
         // build new beta user
