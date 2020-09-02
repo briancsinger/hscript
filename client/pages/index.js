@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import SignIn from './splash/splash';
+import BetaSignUp from './auth/beta-signup';
 
 const LandingPage = ({ currentUser, roles }) => {
     const roleList = roles.map((role) => {
@@ -29,7 +29,7 @@ const LandingPage = ({ currentUser, roles }) => {
                     <tbody>{roleList}</tbody>
                 </table>
             </div>
-        )) || <SignIn />
+        )) || <BetaSignUp />
     );
 };
 
