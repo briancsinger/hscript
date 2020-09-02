@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function SignIn() {
+export default function BetaSignupForm() {
     const [emailAddress, setEmailAddress] = useState('');
     const [isValidEmailAddress, setIsValidEmailAddress] = useState(true);
     const [inProgress, setInProgress] = useState(false);
