@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import BetaSignUp from './auth/beta-signup';
+import Typography from '@material-ui/core/Typography';
 
 const LandingPage = ({ currentUser, roles }) => {
     const roleList = roles.map((role) => {
@@ -17,18 +18,9 @@ const LandingPage = ({ currentUser, roles }) => {
 
     return (
         (currentUser && (
-            <div>
-                <h2>Roles</h2>
-                <table className="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Link</th>
-                        </tr>
-                    </thead>
-                    <tbody>{roleList}</tbody>
-                </table>
-            </div>
+            <Typography variant="h1" color="initial">
+                ROOT SIGNED IN DASHBOARD
+            </Typography>
         )) || <BetaSignUp />
     );
 };
