@@ -2,13 +2,15 @@ import 'fontsource-roboto';
 
 import React from 'react';
 import Head from 'next/head';
-import buildClient from '../api/build-client';
-import Header from '../component/header';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import theme from '../theme/theme';
 
-const AppComponent = ({ Component, pageProps, currentUser }) => {
+import buildClient from '../api/build-client';
+import Header from '../component/header';
+import theme from '../theme/theme';
+import Dashboard from '../component/dashboard/dashboard';
+
+const AppComponent = ({ Component, pageProps, currentUser, pathName }) => {
     React.useEffect(() => {
         // Remove the server-side injected CSS.
         const jssStyles = document.querySelector('#jss-server-side');
@@ -16,6 +18,20 @@ const AppComponent = ({ Component, pageProps, currentUser }) => {
             jssStyles.parentElement.removeChild(jssStyles);
         }
     }, []);
+
+    // if there's no currentUser it means the user is logged out
+    // so don't wrap the Component in the dashboard
+    const renderComponent = () => {
+        const component = (
+            <Component currentUser={currentUser} {...pageProps} />
+        );
+
+        if (!currentUser) {
+            return component;
+        }
+
+        return <Dashboard pathName={pathName}>{component}</Dashboard>;
+    };
 
     return (
         <React.Fragment>
@@ -29,13 +45,14 @@ const AppComponent = ({ Component, pageProps, currentUser }) => {
             <ThemeProvider theme={theme}>
                 {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
                 <CssBaseline />
-                <Component currentUser={currentUser} {...pageProps} />
+                {renderComponent()}
             </ThemeProvider>
         </React.Fragment>
     );
 };
 
 AppComponent.getInitialProps = async ({ Component, ctx }) => {
+    const { pathname: pathName = '/' } = ctx;
     const client = buildClient(ctx);
     const { data } = await client.get('/api/users/currentuser');
 
@@ -50,6 +67,7 @@ AppComponent.getInitialProps = async ({ Component, ctx }) => {
 
     return {
         pageProps,
+        pathName,
         ...data,
     };
 };
