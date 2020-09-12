@@ -29,9 +29,8 @@ export const currentUser = async (
             process.env.JWT_KEY!,
         )) as UserPayload;
         req.currentUser = payload;
-        console.info({ payload });
     } catch (e) {
-        console.error('issues verifyint current user');
+        console.error('issues verifying current user');
     }
 
     next();
