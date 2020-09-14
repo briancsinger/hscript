@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default () => {
+const SignOut = () => {
     const classes = useStyles();
 
     const { doRequest } = useRequest({
@@ -46,3 +46,5 @@ export default () => {
         </Grid>
     );
 };
+
+export default SignOut;

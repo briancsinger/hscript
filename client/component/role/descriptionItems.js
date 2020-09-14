@@ -1,4 +1,4 @@
-export default ({ descriptionItems = [] }) => {
+const DescriptionItem = ({ descriptionItems = [] }) => {
     const renderLinkItem = (item, index) => (
         <p>
             <a href={item.url} target="_blank" referrer="self">
@@ -27,3 +27,5 @@ export default ({ descriptionItems = [] }) => {
 
     return <div>{itemsList}</div>;
 };
+
+export default DescriptionItem;

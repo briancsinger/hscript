@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default ({ currentUser }) => {
+const Header = ({ currentUser }) => {
     const classes = useStyles();
 
     const links = [
@@ -58,3 +58,5 @@ export default ({ currentUser }) => {
         </AppBar>
     );
 };
+
+export default Header;

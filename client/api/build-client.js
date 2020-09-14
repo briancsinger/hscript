@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export default ({ req }) => {
+const buildClient = ({ req }) => {
     let baseURL = 'http://www.singer.land';
     // if (process.env.NODE_ENV === 'development') {
     //     baseURL =
@@ -15,3 +15,5 @@ export default ({ req }) => {
     }
     return axios.create({ baseURL: '/' });
 };
+
+export default buildClient;

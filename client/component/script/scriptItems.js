@@ -1,4 +1,4 @@
-export default ({ items = [] }) => {
+const ScriptItems = ({ items = [] }) => {
     const renderLinkItem = (item, index) => (
         <p>
             <a href={item.url} target="_blank" referrer="self">
@@ -23,3 +23,5 @@ export default ({ items = [] }) => {
 
     return <div>{itemsList}</div>;
 };
+
+export default ScriptItems;

@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default () => {
+const SignUp = () => {
     const classes = useStyles();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -135,3 +135,5 @@ export default () => {
         </Container>
     );
 };
+
+export default SignUp;
