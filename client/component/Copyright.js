@@ -1,7 +1,7 @@
 import Typography from '@material-ui/core/Typography';
 import Link from 'next/link';
 
-export default () => {
+const Copyright = () => {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
             {'Copyright © '}
@@ -13,3 +13,5 @@ export default () => {
         </Typography>
     );
 };
+
+export default Copyright;

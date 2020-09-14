@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default ({ role = {} }) => {
+const RoleListItem = ({ role = {} }) => {
     const classes = useStyles();
 
     const handleClick = () => {
@@ -54,3 +54,5 @@ export default ({ role = {} }) => {
         </Card>
     );
 };
+
+export default RoleListItem;

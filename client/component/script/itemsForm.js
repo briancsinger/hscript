@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default ({ onSave }) => {
+const ItemsForm = ({ onSave }) => {
     const [value, setValue] = useState('');
     const [type, setType] = useState('');
     const [editing, setEditing] = useState(false);
@@ -74,3 +74,5 @@ export default ({ onSave }) => {
         </div>
     );
 };
+
+export default ItemsForm;
