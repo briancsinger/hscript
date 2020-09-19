@@ -158,7 +158,6 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
     };
 
     const handleSkillsChange = (updatedSkills) => {
-        console.log({ updatedSkills });
         setSkills(updatedSkills);
     };
 
