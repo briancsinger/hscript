@@ -36,7 +36,7 @@ router.post(
             throw new NotFoundError();
         }
 
-        if (role.createdBy !== userId) {
+        if (String(role.createdBy) !== userId) {
             throw new NotAuthorizedError();
         }
 

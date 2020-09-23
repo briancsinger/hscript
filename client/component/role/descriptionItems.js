@@ -1,15 +1,20 @@
+import Typography from '@material-ui/core/Typography';
+import Link from '@material-ui/core/Link';
+import Box from '@material-ui/core/Box';
+
 const DescriptionItem = ({ descriptionItems = [] }) => {
     const renderLinkItem = (item, index) => (
-        <p>
-            <a href={item.url} target="_blank" referrer="self">
+        <Typography variant="body1">
+            <Link href={item.url} target="_blank">
                 {item.url}
-            </a>
-        </p>
+            </Link>
+        </Typography>
     );
 
     const renderTextItem = (item, index) => {
-        return <p>{item.text}</p>;
+        return <Typography variant="body1">{item.text}</Typography>;
     };
+
     const renderItem = (item, index) => {
         switch (item.type) {
             case 'link':
@@ -22,10 +27,12 @@ const DescriptionItem = ({ descriptionItems = [] }) => {
     };
 
     const itemsList = descriptionItems.map((item, index) => (
-        <div key={index}>{renderItem(item, index)}</div>
+        <Box key={index} mb={3}>
+            {renderItem(item, index)}
+        </Box>
     ));
 
-    return <div>{itemsList}</div>;
+    return itemsList;
 };
 
 export default DescriptionItem;

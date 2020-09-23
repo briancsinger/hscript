@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import List from '@material-ui/core/List';
@@ -8,7 +8,10 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Typography from '@material-ui/core/Typography';
 import Router from 'next/router';
 import Link from 'next/link';
+import update from 'immutability-helper';
 import { makeStyles, TextField, Grid } from '@material-ui/core';
+
+import SkillListItem from './skillListItem';
 
 const useStyles = makeStyles((theme) => ({}));
 
@@ -30,17 +33,6 @@ const SkillsInput = ({ initialSkills = [], onChange }) => {
         ...initialSkills,
         { text: '', id: getRandomUniqueId(initialSkills), new: true },
     ]);
-
-    const skillListItem = (skill, index, placeholder, label) => (
-        <TextField
-            multiline
-            fullWidth
-            variant="outlined"
-            placeholder={placeholder}
-            value={skill.text}
-            onChange={handleSkillChange.bind(this, skill)}
-        />
-    );
 
     const handleSkillChange = (skill, e) => {
         e.preventDefault();
@@ -86,19 +78,64 @@ const SkillsInput = ({ initialSkills = [], onChange }) => {
         setSkills(updatedSkills);
     };
 
+    const moveSkillListItem = useCallback(
+        (dragIndex, hoverIndex) => {
+            const dragSkill = skills[dragIndex];
+            const updatedSkills = update(skills, {
+                $splice: [
+                    [dragIndex, 1],
+                    [hoverIndex, 0, dragSkill],
+                ],
+            });
+
+            if (onChange) {
+                let skillsToSave = updatedSkills.map((skill) => {
+                    if (skill.new) {
+                        return {
+                            text: skill.text,
+                        };
+                    }
+
+                    return skill;
+                });
+
+                // don't save an empty last skill
+                if (!(skillsToSave.slice(-1).pop() || {}).text) {
+                    skillsToSave.pop();
+                }
+
+                onChange(skillsToSave);
+            }
+
+            if ((updatedSkills.slice(-1).pop() || {}).text) {
+                updatedSkills.push({
+                    text: '',
+                    id: getRandomUniqueId(initialSkills),
+                    new: true,
+                });
+            }
+
+            setSkills(updatedSkills);
+        },
+        [skills],
+    );
+
     const skillsList = () => {
         return (
             <Grid container direction="column" spacing={1}>
                 {skills.map((skill, index) => (
-                    <Grid item key={index}>
-                        {skillListItem(
-                            skill,
-                            index,
+                    <SkillListItem
+                        key={skill.id}
+                        skill={skill}
+                        index={index}
+                        placeholder={
                             index === skills.length - 1
                                 ? 'Add a new skill'
-                                : 'Skill',
-                        )}
-                    </Grid>
+                                : 'Skill'
+                        }
+                        moveSkillListItem={moveSkillListItem}
+                        handleSkillChange={handleSkillChange}
+                    />
                 ))}
             </Grid>
         );

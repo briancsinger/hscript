@@ -16,6 +16,17 @@ it('returns a 404 if the role is not found', async () => {
 
 it('returns 401 if the user does not own the role and is not an editor', async () => {
     const mockUserId = mongoose.Types.ObjectId().toHexString();
+    const mockUser = User.build({
+        name: 'test',
+        email: 'test@test.com',
+        id: mockUserId,
+        organization: {
+            id: '1',
+            name: 'org',
+        },
+    });
+    await mockUser.save();
+
     const roleProps = {
         name: 'name',
         descriptionItems: [],
@@ -33,6 +44,17 @@ it('returns 401 if the user does not own the role and is not an editor', async (
 
 it('returns the role if the role is found and the user is the owner', async () => {
     const mockUserId = mongoose.Types.ObjectId().toHexString();
+    const mockUser = User.build({
+        name: 'test',
+        email: 'test@test.com',
+        id: mockUserId,
+        organization: {
+            id: '1',
+            name: 'org',
+        },
+    });
+    await mockUser.save();
+
     const roleProps = {
         name: 'name',
         descriptionItems: [],

@@ -1,58 +1,66 @@
 import Card from '@material-ui/core/Card';
+import clsx from 'clsx';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
+import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import Typography from '@material-ui/core/Typography';
 import Router from 'next/router';
 import Link from 'next/link';
 import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
-    roleName: {
-        '&:hover': {
+    scriptCard: {
+        '.MuiCard-root&:hover': {
             cursor: 'pointer',
+            boxShadow: theme.shadows[3],
+            transition: `boxShadow ${theme.transitions.easing.easeInOut} ${theme.transitions.duration.standard}`,
+        },
+    },
+    scriptName: {
+        '&:hover': {
             textDecoration: 'underline',
         },
     },
 }));
 
-const RoleListItem = ({ role = {} }) => {
+const ScriptListItem = ({ script = {} }) => {
     const classes = useStyles();
 
     const handleClick = () => {
-        Router.push('/roles/[roleId]', `/roles/${role.id}`);
+        Router.push('/scripts/[scriptId]', `/scripts/${script.id}`);
     };
 
     return (
-        <Card>
+        <Card className={classes.scriptCard} onClick={handleClick}>
             <CardHeader
+                avatar={<DescriptionOutlinedIcon />}
                 action={
-                    <IconButton aria-label="">
-                        <MoreVertIcon />
+                    <IconButton aria-label="" onClick={handleClick}>
+                        <EditOutlinedIcon />
                     </IconButton>
                 }
                 title={
                     <Typography
-                        className={classes.roleName}
-                        variant="h5"
+                        className={clsx(classes.scriptCard, classes.scriptName)}
+                        variant="h6"
                         color="initial"
                         onClick={handleClick}
                     >
-                        {role.name}
+                        {script.name}
                     </Typography>
                 }
-                subheader={role.createdBy.name}
             />
-            <CardContent>
+            {/* <CardContent>
                 <Typography variant="body1" color="initial">
                     Praesent sapien massa, convallis a pellentesque nec, egestas
                     non nisi. Vivamus suscipit tortor eget felis porttitor
                     volutpat.
                 </Typography>
-            </CardContent>
+            </CardContent> */}
         </Card>
     );
 };
 
-export default RoleListItem;
+export default ScriptListItem;

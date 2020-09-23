@@ -3,6 +3,7 @@ import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 import { SkillSchema, SkillDoc } from './subdocuments/skill';
 import { QuestionDoc, QuestionSchema } from './subdocuments/question';
+import { UserDoc } from './user';
 
 enum RoleDescriptionType {
     Text = 'text',
@@ -34,8 +35,8 @@ interface RoleAttrs {
     questions?: QuestionArray;
 }
 
-interface RoleDoc extends mongoose.Document {
-    createdBy: string;
+interface RoleDocBase extends mongoose.Document {
+    // createdBy: string;
     descriptionItems: RoleDescriptionItems;
     name: string;
     version: number;
@@ -44,14 +45,15 @@ interface RoleDoc extends mongoose.Document {
     editors: Array<string>;
 }
 
-interface RoleModel extends mongoose.Model<RoleDoc> {
-    build(attrs: RoleAttrs): RoleDoc;
-}
+// interface RoleModel extends mongoose.Model<RoleDoc> {
+//     build(attrs: RoleAttrs): RoleDoc;
+// }
 
 const RoleSchema = new mongoose.Schema(
     {
         createdBy: {
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
             required: true,
         },
         descriptionItems: {
@@ -81,6 +83,35 @@ const RoleSchema = new mongoose.Schema(
         },
     },
 );
+
+// Export this for strong typing
+export interface RoleDoc extends RoleDocBase {
+    createdBy: UserDoc['_id'];
+}
+
+// Export this for strong typing
+export interface RoleDoc_populated extends RoleDocBase {
+    createdBy: UserDoc;
+}
+
+// Static methods
+RoleSchema.statics.findWithMyCreatorById = async function (id: string) {
+    return this.findById(id).populate('createdBy').exec();
+};
+
+RoleSchema.statics.findWithMyCreator = async function (args: any) {
+    return this.find(args).populate('createdBy').populate('editors').exec();
+};
+
+// For model
+export interface RoleModel extends mongoose.Model<RoleDoc> {
+    // (method) Model<RoleDoc, {}>.find(callback?: ((err: any, res: RoleDoc[]) => void) | undefined): mongoose.DocumentQuery<RoleDoc[], RoleDoc, {}> (+4 overloads)
+    findWithMyCreator(
+        args: any,
+    ): Promise<mongoose.DocumentQuery<RoleDoc[], RoleDoc, {}>>;
+    findWithMyCreatorById(id: string): Promise<RoleDoc_populated>;
+    build(attrs: RoleAttrs): RoleDoc;
+}
 
 RoleSchema.set('versionKey', 'version');
 RoleSchema.plugin(updateIfCurrentPlugin);

@@ -70,7 +70,7 @@ router.post(
         // Publish an event
         await new RoleCreatedPublisher(natsWrapper.client).publish({
             id: role.id,
-            createdBy: role.createdBy,
+            createdBy: role.createdBy.id,
             name: role.name,
             version: role.version,
         });

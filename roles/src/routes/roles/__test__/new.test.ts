@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import { app } from '../../../app';
 import { Role, RoleDescriptionType } from '../../../models/role';
 import { natsWrapper } from '../../../nats-wrapper';
+import { User } from '../../../models/user';
 
 it('can only be accessed if the user is signed in', async () => {
     const response = await request(app).post('/api/roles').send({}).expect(401);
@@ -142,6 +143,17 @@ it('creates a role with valid paramaters', async () => {
     const questions = [{ text: 'question1' }];
 
     const mockUserId = mongoose.Types.ObjectId().toHexString();
+    const mockUser = User.build({
+        name: 'test',
+        email: 'test@test.com',
+        id: mockUserId,
+        organization: {
+            id: '1',
+            name: 'org',
+        },
+    });
+    await mockUser.save();
+
     const { body } = await request(app)
         .post('/api/roles')
         .set('Cookie', global.signin(mockUserId))
@@ -163,7 +175,7 @@ it('creates a role with valid paramaters', async () => {
     expect(body.questions![0].text).toEqual(questions[0].text);
     expect(roles[0].descriptionItems[0].type).toEqual(descriptionItems[0].type);
     expect(roles[0].name).toEqual(name);
-    expect(roles[0].createdBy).toEqual(mockUserId);
+    expect(String(roles[0].createdBy)).toEqual(mockUserId);
     expect(roles[0].skills![0].text).toEqual(skills[0].text);
     expect(roles[0].questions![0].text).toEqual(questions[0].text);
 });
