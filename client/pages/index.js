@@ -7,6 +7,7 @@ import AddIcon from '@material-ui/icons/Add';
 import RoleListItem from '../component/role/roleListItem';
 
 const LandingPage = ({ currentUser, roles }) => {
+    console.log({ roles });
     const roleList = (
         <Grid container direction="column" spacing={3}>
             <Grid item container direction="row" justify="space-between">
@@ -49,7 +50,6 @@ LandingPage.getInitialProps = async (context, client, currentUser) => {
         const { data } = await client.get('/api/roles');
         roles = data;
     } catch (e) {}
-
     return { roles };
 };
 

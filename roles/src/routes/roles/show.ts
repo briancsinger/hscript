@@ -9,17 +9,20 @@ router.get(
     '/api/roles/:id',
     requireAuth,
     async (req: Request, res: Response) => {
-        const role = await Role.findById(req.params.id).populate('editors');
+        const role = await Role.findWithMyCreatorById(req.params.id);
         const currentUserId = req.currentUser!.id;
 
         if (!role) {
             throw new NotFoundError();
         }
 
+        // if we have a role populate the editors
+        await role.populate('editors').execPopulate();
+
         const hasAccess =
             // @ts-ignore
             role.editors.some((editor) => editor.id === currentUserId) ||
-            role.createdBy == currentUserId;
+            role.createdBy.id == currentUserId;
         if (!hasAccess) {
             throw new NotAuthorizedError();
         }

@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 
 const DescriptionForm = ({ onSave }) => {
     const [value, setValue] = useState('');
@@ -28,59 +31,48 @@ const DescriptionForm = ({ onSave }) => {
     };
 
     return (
-        <div>
+        <>
             {editing && (
-                <>
-                    <div className="form-group">
+                <Grid container spacing={1} direction="column">
+                    <Grid item>
                         {type === 'text' ? (
-                            <textarea
+                            <TextField
+                                id="text"
+                                label="Text"
                                 value={value}
-                                rows="3"
                                 onChange={(e) => setValue(e.target.value)}
-                                className="form-control"
+                                rows="3"
+                                multiline
+                                fullWidth
+                                variant="outlined"
                             />
                         ) : (
-                            <input
+                            <TextField
+                                id="link"
+                                label="Link"
                                 value={value}
-                                type="url"
                                 onChange={(e) => setValue(e.target.value)}
-                                className="form-control"
+                                type="url"
+                                fullWidth
+                                variant="outlined"
                             />
                         )}
-                    </div>
-                    <div>
-                        <button
-                            className="btn btn-primary mr-2"
-                            onClick={handleSaveItem}
-                        >
-                            Save
-                        </button>
-                        <button
-                            className="btn mr-2"
-                            onClick={handleCancleClick}
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </>
+                    </Grid>
+                    <Grid item>
+                        <Grid container spacing={1}>
+                            <Button onClick={handleSaveItem}>Save</Button>
+                            <Button onClick={handleCancleClick}>Cancel</Button>
+                        </Grid>
+                    </Grid>
+                </Grid>
             )}
             {!editing && (
-                <div>
-                    <button
-                        className="btn btn-primary mr-2"
-                        onClick={handleAddLinkItem}
-                    >
-                        + Link
-                    </button>
-                    <button
-                        className="btn btn-primary mr-2"
-                        onClick={handleAddTextItem}
-                    >
-                        + Text
-                    </button>
-                </div>
+                <Grid container spacing={1}>
+                    <Button onClick={handleAddLinkItem}>Add link</Button>
+                    <Button onClick={handleAddTextItem}>Add text</Button>
+                </Grid>
             )}
-        </div>
+        </>
     );
 };
 

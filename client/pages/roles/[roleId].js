@@ -15,12 +15,17 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles, Paper } from '@material-ui/core';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import AddIcon from '@material-ui/icons/Add';
 
 import useRequest from '../../hooks/use-request';
 import DescriptionItems from '../../component/role/descriptionItems';
 import DescriptionForm from '../../component/role/descriptionForm';
 import Breadcrumbs from '../../component/dashboard/breadcrumbs';
 import SkillsInput from '../../component/role/skillsInputs';
+import DragableTextFieldListItems from '../../component/role/dragableTextFieldListItems';
+import SkillListItem from '../../component/role/scriptListItem';
 
 const useStyles = makeStyles((theme) => ({
     boxWrapper: {
@@ -34,6 +39,13 @@ const useStyles = makeStyles((theme) => ({
             padding: theme.spacing(6),
         },
     },
+    nameInput: {
+        fontSize: theme.typography.h4.fontSize,
+        fontFamily: theme.typography.h4.fontFamily,
+    },
+    scriptAddItem: {
+        marginTop: theme.spacing(1),
+    },
 }));
 
 const RoleShow = ({ currentUser, role, scripts, pathName }) => {
@@ -43,6 +55,7 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
     const [editorEmail, setEditorEmail] = useState('');
     const [scriptName, setScriptName] = useState('');
     const [skills, setSkills] = useState(role.skills);
+    const [questions, setQuestions] = useState(role.questions);
     const [questionText, setQuestionText] = useState('');
 
     const {
@@ -105,10 +118,20 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
 
     const debouncedUpdateRoleSkills = useCallback(
         debounce(() => {
+            console.log('debouncedUpdateRoleSkills');
             updateRoleRequest({ skills });
             setSavingRole(true);
         }, 500),
         [skills],
+    );
+
+    const debouncedUpdateRoleQuestions = useCallback(
+        debounce(() => {
+            console.log('debouncedUpdateRoleQuestions');
+            updateRoleRequest({ questions });
+            setSavingRole(true);
+        }, 500),
+        [questions],
     );
 
     const handleRoleNameChange = (e) => {
@@ -126,24 +149,20 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
     }, [roleName, debouncedUpdateRoleName]);
 
     useEffect(() => {
+        if (role.skills === skills) return;
+        console.log(`useEffect debouncedUpdateRoleSkills`);
         debouncedUpdateRoleSkills();
         // Cancel the debounce on useEffect cleanup.
         return debouncedUpdateRoleSkills.cancel;
     }, [skills, debouncedUpdateRoleSkills]);
 
-    const handleQuestionSubmit = (e) => {
-        e.preventDefault();
-
-        const updatedQuestions = [
-            ...(role.questions || []),
-            {
-                text: questionText,
-            },
-        ];
-        updateRoleRequest({ questions: updatedQuestions });
-
-        setQuestionText('');
-    };
+    useEffect(() => {
+        if (role.questions === questions) return;
+        console.log(`useEffect debouncedUpdateRoleQuestions`);
+        debouncedUpdateRoleQuestions();
+        // Cancel the debounce on useEffect cleanup.
+        return debouncedUpdateRoleQuestions.cancel;
+    }, [questions, debouncedUpdateRoleQuestions]);
 
     const handleSaveItem = ({ type, value }) => {
         const newDescriptionItem = {
@@ -161,21 +180,9 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
         setSkills(updatedSkills);
     };
 
-    const scriptList = scripts.map((script) => {
-        return (
-            <tr key={script.id}>
-                <td>{script.name}</td>
-                <td>
-                    <Link
-                        href="/scripts/[scriptId]"
-                        as={`/scripts/${script.id}`}
-                    >
-                        <a>Details</a>
-                    </Link>
-                </td>
-            </tr>
-        );
-    });
+    const handleQuestionsChange = (updatedQuestions) => {
+        setQuestions(updatedQuestions);
+    };
 
     const editorList = (role.editors || []).map((editor, index) => (
         <li className="list-group-item px-0" key={index}>
@@ -190,11 +197,14 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
         />
     );
 
-    const questionList = (role.questions || []).map((question, index) => (
-        <li className="list-group-item px-0" key={index}>
-            {question.text}
-        </li>
-    ));
+    const questionList = (
+        <DragableTextFieldListItems
+            initialItems={role.questions}
+            onChange={handleQuestionsChange}
+            itemName="question"
+            itemType="question"
+        />
+    );
 
     return (
         <Container maxWidth="md">
@@ -214,171 +224,153 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
                 )}
             </Grid>
 
-            <Grid container spacing={3} direction="column">
-                <Grid item>
-                    <Paper>
-                        <Box className={classes.boxWrapper}>
-                            <Typography variant="h4">{role.name}</Typography>
-                            <TextField
-                                id="name"
-                                label="Name"
-                                value={roleName}
-                                onChange={handleRoleNameChange}
-                                fullWidth
-                                variant="outlined"
-                            />
-                        </Box>
-                    </Paper>
-                </Grid>
-                <Grid item>
-                    <Typography variant="h5" gutterBottom>
-                        Editors:
-                    </Typography>
-                    <Paper>
-                        <Box className={classes.boxWrapper}>
-                            <div>
-                                <ul>{editorList}</ul>
-                            </div>
-
-                            <div>
-                                <Typography variant="body1">
-                                    Add an editor
-                                </Typography>
-                                <form onSubmit={handleSubmitEditor}>
-                                    <div>
-                                        <div>
-                                            <input
-                                                placeholder="email address"
-                                                value={editorEmail}
-                                                onChange={(e) =>
-                                                    setEditorEmail(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                            />
-                                            <div>
-                                                <input
-                                                    type="submit"
-                                                    value="Add"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {addEditorRequestErrors}
-                                </form>
-                            </div>
-                        </Box>
-                    </Paper>
-                </Grid>
-                <Grid item>
-                    <Typography variant="h5" gutterBottom>
-                        Role description:
-                    </Typography>
-                    <Paper>
-                        <Box className={classes.boxWrapper}>
-                            <div>
-                                <DescriptionItems
-                                    descriptionItems={role.descriptionItems}
+            <DndProvider backend={HTML5Backend}>
+                <Grid container spacing={3} direction="column">
+                    <Grid item>
+                        <Paper>
+                            <Box className={classes.boxWrapper}>
+                                <TextField
+                                    inputProps={{
+                                        className: classes.nameInput,
+                                    }}
+                                    id="name"
+                                    label="Name"
+                                    value={roleName}
+                                    onChange={handleRoleNameChange}
+                                    fullWidth
+                                    variant="outlined"
                                 />
-                            </div>
+                            </Box>
+                        </Paper>
+                    </Grid>
+                    <Grid item>
+                        <Typography variant="h5" gutterBottom>
+                            Editors:
+                        </Typography>
+                        <Paper>
+                            <Box className={classes.boxWrapper}>
+                                <div>
+                                    <ul>{editorList}</ul>
+                                </div>
 
-                            <div>
-                                <DescriptionForm onSave={handleSaveItem} />
-                            </div>
-                        </Box>
-                    </Paper>
-                </Grid>
-                <Grid item>
-                    <Typography variant="h5" gutterBottom>
-                        Skills:
-                    </Typography>
-                    <Paper>
-                        <Box className={classes.boxWrapper}>
-                            <div className="">{skillList}</div>
-                        </Box>
-                    </Paper>
-                </Grid>
-                <Grid item>
-                    <Typography variant="h5">Questions:</Typography>
-                    <Paper>
-                        <Box className={classes.boxWrapper}>
-                            <div>
-                                <ul>{questionList}</ul>
-                            </div>
-
-                            <div>
-                                <p>Add a question</p>
-                                <form onSubmit={handleQuestionSubmit}>
-                                    <div>
+                                <div>
+                                    <Typography variant="body1">
+                                        Add an editor
+                                    </Typography>
+                                    <form onSubmit={handleSubmitEditor}>
                                         <div>
-                                            <textarea
-                                                placeholder="question"
-                                                value={questionText}
-                                                onChange={(e) =>
-                                                    setQuestionText(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                            />
                                             <div>
                                                 <input
-                                                    type="submit"
-                                                    value="Add"
+                                                    placeholder="email address"
+                                                    value={editorEmail}
+                                                    onChange={(e) =>
+                                                        setEditorEmail(
+                                                            e.target.value,
+                                                        )
+                                                    }
                                                 />
+                                                <div>
+                                                    <input
+                                                        type="submit"
+                                                        value="Add"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </Box>
-                    </Paper>
-                </Grid>
-                <Grid item>
-                    <Typography variant="h5">Scripts:</Typography>
-                    <Paper>
-                        <Box className={classes.boxWrapper}>
-                            <div>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Link</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>{scriptList}</tbody>
-                                </table>
-                            </div>
+                                        {addEditorRequestErrors}
+                                    </form>
+                                </div>
+                            </Box>
+                        </Paper>
+                    </Grid>
+                    <Grid item>
+                        <Typography variant="h5" gutterBottom>
+                            Role description:
+                        </Typography>
+                        <Paper>
+                            <Box className={classes.boxWrapper}>
+                                <div>
+                                    <DescriptionItems
+                                        descriptionItems={role.descriptionItems}
+                                    />
+                                </div>
 
-                            <div>
-                                <p>Create a Script</p>
-                                <form onSubmit={handleSubmit}>
+                                <div>
+                                    <DescriptionForm onSave={handleSaveItem} />
+                                </div>
+                            </Box>
+                        </Paper>
+                    </Grid>
+                    <Grid item>
+                        <Typography variant="h5" gutterBottom>
+                            Skills:
+                        </Typography>
+                        <Paper>
+                            <Box className={classes.boxWrapper}>
+                                <div className="">{skillList}</div>
+                            </Box>
+                        </Paper>
+                    </Grid>
+                    <Grid item>
+                        <Typography variant="h5" gutterBottom>
+                            Questions:
+                        </Typography>
+                        <Paper>
+                            <Box className={classes.boxWrapper}>
+                                <div className="">{questionList}</div>
+                            </Box>
+                        </Paper>
+                    </Grid>
+                    <Grid item>
+                        <Typography variant="h5" gutterBottom>
+                            Scripts:
+                        </Typography>
+
+                        <Grid item container spacing={2}>
+                            {scripts.map((script) => (
+                                <Grid item key={script.id} xs={12} md={6}>
+                                    <SkillListItem script={script} />
+                                </Grid>
+                            ))}
+                            <Grid
+                                item
+                                key="add-button"
+                                xs={12}
+                                className={classes.scriptAddItem}
+                            >
+                                <Button
+                                    startIcon={<AddIcon />}
+                                    variant="contained"
+                                    color="secondary"
+                                >
+                                    Add a script
+                                </Button>
+                            </Grid>
+                        </Grid>
+
+                        <div>
+                            <p>Create a Script</p>
+                            <form onSubmit={handleSubmit}>
+                                <div>
                                     <div>
+                                        <input
+                                            placeholder="script name"
+                                            value={scriptName}
+                                            onChange={(e) =>
+                                                setScriptName(e.target.value)
+                                            }
+                                        />
                                         <div>
-                                            <input
-                                                placeholder="script name"
-                                                value={scriptName}
-                                                onChange={(e) =>
-                                                    setScriptName(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                            />
-                                            <div>
-                                                <input
-                                                    type="submit"
-                                                    value="Add"
-                                                />
-                                            </div>
+                                            <input type="submit" value="Add" />
                                         </div>
                                     </div>
-                                    {createScriptRequestErrors}
-                                </form>
-                            </div>
-                        </Box>
-                    </Paper>
+                                </div>
+                                {createScriptRequestErrors}
+                            </form>
+                        </div>
+                    </Grid>
                 </Grid>
-            </Grid>
-
+            </DndProvider>
             {updateRoleRequestErrors}
         </Container>
     );

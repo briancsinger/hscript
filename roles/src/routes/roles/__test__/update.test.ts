@@ -284,7 +284,7 @@ it('updates the role provided valid inputs and user is an editor', async () => {
     const role = Role.build(roleProps);
     role.editors.push(editor.id);
     await role.save();
-    console.log(role);
+
     const newName = 'new name';
 
     await request(app)
