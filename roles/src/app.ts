@@ -14,6 +14,7 @@ import { createScriptRouter } from './routes/scripts/new';
 import { getScriptRouter } from './routes/scripts/show';
 import { updateScriptRouter } from './routes/scripts/update';
 import { addRoleEditorRoute } from './routes/roles/new-editor';
+import { removeRoleEditorRoute } from './routes/roles/delete-editor';
 
 const app = express();
 app.set('trust proxy', true);
@@ -36,6 +37,7 @@ app.use(getRolesRouter);
 app.use(getRoleRouter);
 app.use(updateRoleRouter);
 app.use(addRoleEditorRoute);
+app.use(removeRoleEditorRoute);
 
 app.all('*', async (req, res) => {
     throw new NotFoundError();

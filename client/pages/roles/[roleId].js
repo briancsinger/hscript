@@ -1,8 +1,10 @@
 import { useState, useCallback, useEffect } from 'react';
 import { debounce } from 'lodash';
+import remove from 'lodash/fp/remove';
 import Router from 'next/router';
 import Link from 'next/link';
 import Avatar from '@material-ui/core/Avatar';
+import Chip from '@material-ui/core/Chip';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import Card from '@material-ui/core/Card';
@@ -26,6 +28,7 @@ import Breadcrumbs from '../../component/dashboard/breadcrumbs';
 import SkillsInput from '../../component/role/skillsInputs';
 import DragableTextFieldListItems from '../../component/role/dragableTextFieldListItems';
 import SkillListItem from '../../component/role/scriptListItem';
+import getGravatar from '../../utils/get-gravatar';
 
 const useStyles = makeStyles((theme) => ({
     boxWrapper: {
@@ -38,6 +41,9 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up('md')]: {
             padding: theme.spacing(6),
         },
+    },
+    editorTextField: {
+        width: '300px',
     },
     nameInput: {
         fontSize: theme.typography.h4.fontSize,
@@ -53,6 +59,7 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
     const [savingRole, setSavingRole] = useState(false);
     const [roleName, setRoleName] = useState(role.name);
     const [editorEmail, setEditorEmail] = useState('');
+    const [deleteEditorId, setDeleteEditorId] = useState();
     const [scriptName, setScriptName] = useState('');
     const [skills, setSkills] = useState(role.skills);
     const [questions, setQuestions] = useState(role.questions);
@@ -82,6 +89,18 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
             email: editorEmail,
         },
         onSuccess: (script) => {
+            setEditorEmail('');
+            Router.push('/roles/[roleId]', `/roles/${role.id}`);
+        },
+    });
+
+    const {
+        doRequest: removeEditorRequest,
+        errors: removeEditorRequestErrors,
+    } = useRequest({
+        method: 'delete',
+        onSuccess: (script) => {
+            setDeleteEditorId();
             Router.push('/roles/[roleId]', `/roles/${role.id}`);
         },
     });
@@ -139,6 +158,23 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
         setRoleName(e.target.value);
     };
 
+    const handleDeleteEditor = (deletedEditor) => {
+        // const updatedEditors = role.editors.reduce((accum, editor) => {
+        //     if (editor.id !== deletedEditor.id) {
+        //         accum.push()
+        //     }
+        // }, [])
+        console.log(
+            remove((e) => e.id === deletedEditor.id, role.editors),
+            role.editors,
+            deletedEditor,
+        );
+        // setDeleteEditorId(deletedEditor.id);
+        removeEditorRequest({
+            url: `/api/roles/${role.id}/editors/${deletedEditor.id}/`,
+        });
+    };
+
     useEffect(() => {
         // Only going to update rolename if it's a non-empty string
         if (roleName && role.name !== roleName) {
@@ -185,9 +221,21 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
     };
 
     const editorList = (role.editors || []).map((editor, index) => (
-        <li className="list-group-item px-0" key={index}>
-            {editor.name} ({editor.email})
-        </li>
+        <Grid item key={editor.id}>
+            <Chip
+                label={editor.name}
+                onDelete={() => handleDeleteEditor(editor)}
+                avatar={
+                    <Avatar
+                        alt={editor.name}
+                        src={getGravatar(editor.email, 50)}
+                    >
+                        {editor.name.slice(0, 1).toUpperCase()}
+                    </Avatar>
+                }
+                variant="outlined"
+            />
+        </Grid>
     ));
 
     const skillList = (
@@ -249,37 +297,45 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
                         </Typography>
                         <Paper>
                             <Box className={classes.boxWrapper}>
-                                <div>
-                                    <ul>{editorList}</ul>
-                                </div>
-
-                                <div>
-                                    <Typography variant="body1">
-                                        Add an editor
-                                    </Typography>
-                                    <form onSubmit={handleSubmitEditor}>
-                                        <div>
-                                            <div>
-                                                <input
-                                                    placeholder="email address"
-                                                    value={editorEmail}
-                                                    onChange={(e) =>
-                                                        setEditorEmail(
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                />
-                                                <div>
-                                                    <input
-                                                        type="submit"
-                                                        value="Add"
+                                <Grid container spacing={3} direction="column">
+                                    <Grid item container spacing={1}>
+                                        {editorList}
+                                    </Grid>
+                                    <Grid item>
+                                        <form onSubmit={handleSubmitEditor}>
+                                            <Grid container spacing={2}>
+                                                <Grid item>
+                                                    <TextField
+                                                        className={
+                                                            classes.editorTextField
+                                                        }
+                                                        value={editorEmail}
+                                                        onChange={(e) =>
+                                                            setEditorEmail(
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        placeholder="Editor email (e.g. marta@intra.team)"
                                                     />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {addEditorRequestErrors}
-                                    </form>
-                                </div>
+                                                </Grid>
+                                                <Grid item>
+                                                    <Button
+                                                        size="small"
+                                                        type="submit"
+                                                        color="secondary"
+                                                        variant="contained"
+                                                    >
+                                                        add
+                                                    </Button>
+                                                </Grid>
+                                            </Grid>
+
+                                            {addEditorRequestErrors}
+                                        </form>
+                                    </Grid>
+                                </Grid>
+
+                                <div></div>
                             </Box>
                         </Paper>
                     </Grid>
