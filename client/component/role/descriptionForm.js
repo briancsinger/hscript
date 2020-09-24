@@ -60,16 +60,48 @@ const DescriptionForm = ({ onSave }) => {
                     </Grid>
                     <Grid item>
                         <Grid container spacing={1}>
-                            <Button onClick={handleSaveItem}>Save</Button>
-                            <Button onClick={handleCancleClick}>Cancel</Button>
+                            <Grid item>
+                                <Button
+                                    color="secondary"
+                                    variant="contained"
+                                    onClick={handleSaveItem}
+                                >
+                                    Save
+                                </Button>
+                            </Grid>
+                            <Grid item>
+                                <Button
+                                    color="secondary"
+                                    variant="contained"
+                                    onClick={handleCancleClick}
+                                >
+                                    Cancel
+                                </Button>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
             )}
             {!editing && (
                 <Grid container spacing={1}>
-                    <Button onClick={handleAddLinkItem}>Add link</Button>
-                    <Button onClick={handleAddTextItem}>Add text</Button>
+                    <Grid item>
+                        <Button
+                            color="secondary"
+                            variant="outlined"
+                            onClick={handleAddLinkItem}
+                        >
+                            Add link
+                        </Button>
+                    </Grid>
+                    <Grid item>
+                        <Button
+                            color="secondary"
+                            variant="outlined"
+                            onClick={handleAddTextItem}
+                        >
+                            Add text
+                        </Button>
+                    </Grid>
                 </Grid>
             )}
         </>

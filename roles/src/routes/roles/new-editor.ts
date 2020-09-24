@@ -36,7 +36,10 @@ router.post(
             throw new NotFoundError();
         }
 
-        if (String(role.createdBy) !== userId) {
+        const hasAccess =
+            role.editors.includes(userId) || String(role.createdBy) == userId;
+
+        if (!hasAccess) {
             throw new NotAuthorizedError();
         }
 
