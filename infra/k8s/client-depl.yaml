@@ -15,6 +15,9 @@ spec:
       containers:
         - name: client
           image: hscript/client
+          env:
+            - name: FOO
+              value: "BAR"
 ---
 apiVersion: v1
 kind: Service

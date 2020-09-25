@@ -36,6 +36,9 @@ const useStyles = makeStyles((theme) => ({
     submit: {
         margin: theme.spacing(3, 0, 2),
     },
+    input: {
+        backgroundColor: theme.palette.background.paper,
+    },
 }));
 
 const SignUp = () => {
@@ -68,6 +71,7 @@ const SignUp = () => {
                 <form className={classes.form} noValidate onSubmit={onSubmit}>
                     {errors}
                     <TextField
+                        classes={{ root: classes.input }}
                         variant="outlined"
                         margin="normal"
                         required
@@ -81,6 +85,7 @@ const SignUp = () => {
                         onChange={(e) => setName(e.target.value)}
                     />
                     <TextField
+                        classes={{ root: classes.input }}
                         variant="outlined"
                         margin="normal"
                         required
@@ -94,6 +99,7 @@ const SignUp = () => {
                         onChange={(e) => setEmail(e.target.value)}
                     />
                     <TextField
+                        classes={{ root: classes.input }}
                         variant="outlined"
                         margin="normal"
                         required

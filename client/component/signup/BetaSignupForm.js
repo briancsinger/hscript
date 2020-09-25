@@ -69,7 +69,6 @@ export default function BetaSignupForm() {
         method: 'post',
         body: { email: emailAddress },
         onSuccess: (resp) => {
-            console.log('yay', resp);
             setSuccess(true);
             setInProgress(false);
         },

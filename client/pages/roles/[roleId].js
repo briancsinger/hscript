@@ -66,20 +66,6 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
     const [questionText, setQuestionText] = useState('');
 
     const {
-        doRequest: createScriptRequest,
-        errors: createScriptRequestErrors,
-    } = useRequest({
-        url: `/api/roles/${role.id}/scripts`,
-        method: 'post',
-        body: {
-            name: scriptName,
-        },
-        onSuccess: (script) => {
-            Router.push('/scripts/[scriptId]', `/scripts/${script.id}`);
-        },
-    });
-
-    const {
         doRequest: addEditorRequest,
         errors: addEditorRequestErrors,
     } = useRequest({
@@ -117,11 +103,6 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
         },
     });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        createScriptRequest();
-    };
-
     const handleSubmitEditor = (e) => {
         e.preventDefault();
         addEditorRequest();
@@ -137,7 +118,6 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
 
     const debouncedUpdateRoleSkills = useCallback(
         debounce(() => {
-            console.log('debouncedUpdateRoleSkills');
             updateRoleRequest({ skills });
             setSavingRole(true);
         }, 500),
@@ -146,7 +126,6 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
 
     const debouncedUpdateRoleQuestions = useCallback(
         debounce(() => {
-            console.log('debouncedUpdateRoleQuestions');
             updateRoleRequest({ questions });
             setSavingRole(true);
         }, 500),
@@ -159,20 +138,14 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
     };
 
     const handleDeleteEditor = (deletedEditor) => {
-        // const updatedEditors = role.editors.reduce((accum, editor) => {
-        //     if (editor.id !== deletedEditor.id) {
-        //         accum.push()
-        //     }
-        // }, [])
-        console.log(
-            remove((e) => e.id === deletedEditor.id, role.editors),
-            role.editors,
-            deletedEditor,
-        );
-        // setDeleteEditorId(deletedEditor.id);
         removeEditorRequest({
             url: `/api/roles/${role.id}/editors/${deletedEditor.id}/`,
         });
+    };
+
+    const handleAddScriptClicked = (e) => {
+        e.preventDefault();
+        Router.push('/roles/[roleId]/script', `/roles/${role.id}/script`);
     };
 
     useEffect(() => {
@@ -186,7 +159,6 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
 
     useEffect(() => {
         if (role.skills === skills) return;
-        console.log(`useEffect debouncedUpdateRoleSkills`);
         debouncedUpdateRoleSkills();
         // Cancel the debounce on useEffect cleanup.
         return debouncedUpdateRoleSkills.cancel;
@@ -194,13 +166,12 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
 
     useEffect(() => {
         if (role.questions === questions) return;
-        console.log(`useEffect debouncedUpdateRoleQuestions`);
         debouncedUpdateRoleQuestions();
         // Cancel the debounce on useEffect cleanup.
         return debouncedUpdateRoleQuestions.cancel;
     }, [questions, debouncedUpdateRoleQuestions]);
 
-    const handleSaveItem = ({ type, value }) => {
+    const handleSaveDescriptionItem = ({ type, value }) => {
         const newDescriptionItem = {
             type,
             [type === 'link' ? 'url' : 'text']: value,
@@ -322,7 +293,7 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
                                                     <Button
                                                         size="small"
                                                         type="submit"
-                                                        color="secondary"
+                                                        color="primary"
                                                         variant="contained"
                                                     >
                                                         add
@@ -352,7 +323,9 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
                                 </div>
 
                                 <div>
-                                    <DescriptionForm onSave={handleSaveItem} />
+                                    <DescriptionForm
+                                        onSave={handleSaveDescriptionItem}
+                                    />
                                 </div>
                             </Box>
                         </Paper>
@@ -397,33 +370,13 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
                                 <Button
                                     startIcon={<AddIcon />}
                                     variant="contained"
-                                    color="secondary"
+                                    color="primary"
+                                    onClick={handleAddScriptClicked}
                                 >
                                     Add a script
                                 </Button>
                             </Grid>
                         </Grid>
-
-                        <div>
-                            <p>Create a Script</p>
-                            <form onSubmit={handleSubmit}>
-                                <div>
-                                    <div>
-                                        <input
-                                            placeholder="script name"
-                                            value={scriptName}
-                                            onChange={(e) =>
-                                                setScriptName(e.target.value)
-                                            }
-                                        />
-                                        <div>
-                                            <input type="submit" value="Add" />
-                                        </div>
-                                    </div>
-                                </div>
-                                {createScriptRequestErrors}
-                            </form>
-                        </div>
                     </Grid>
                 </Grid>
             </DndProvider>

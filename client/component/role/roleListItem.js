@@ -15,6 +15,13 @@ const useStyles = makeStyles((theme) => ({
             textDecoration: 'underline',
         },
     },
+    roleCard: {
+        '.MuiCard-root&:hover': {
+            cursor: 'pointer',
+            boxShadow: theme.shadows[3],
+            transition: `boxShadow ${theme.transitions.easing.easeInOut} ${theme.transitions.duration.standard}`,
+        },
+    },
 }));
 
 const RoleListItem = ({ role = {} }) => {
@@ -25,7 +32,7 @@ const RoleListItem = ({ role = {} }) => {
     };
 
     return (
-        <Card>
+        <Card className={classes.roleCard} onClick={handleClick}>
             <CardHeader
                 action={
                     <IconButton aria-label="">
