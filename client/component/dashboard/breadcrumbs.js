@@ -21,8 +21,8 @@ const Breadcrumbs = ({ pathName = '', currentPageName }) => {
         switch (path) {
             case 'roles': {
                 accum.push({
-                    href: '/',
-                    as: '/',
+                    href: '/roles',
+                    as: '/roles',
                     name: 'Roles',
                 });
             }

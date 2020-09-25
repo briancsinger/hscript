@@ -36,6 +36,9 @@ const useStyles = makeStyles((theme) => ({
     submit: {
         margin: theme.spacing(3, 0, 2),
     },
+    input: {
+        backgroundColor: theme.palette.background.paper,
+    },
 }));
 
 export default function SignIn() {
@@ -80,8 +83,10 @@ export default function SignIn() {
                         autoFocus
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        classes={{ root: classes.input }}
                     />
                     <TextField
+                        classes={{ root: classes.input }}
                         variant="outlined"
                         margin="normal"
                         required

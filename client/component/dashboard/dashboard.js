@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import clsx from 'clsx';
+import Router from 'next/router';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
@@ -16,19 +17,33 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import PhoneIcon from '@material-ui/icons/Phone';
+import AssignmentIcon from '@material-ui/icons/Assignment';
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
+import GroupIcon from '@material-ui/icons/Group';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { mainListItems, secondaryListItems } from './listItems';
 import Copyright from '../Copyright';
+import Avatar from '@material-ui/core/Avatar';
+import getGravatar from '../../utils/get-gravatar';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Grow from '@material-ui/core/Grow';
+import Popper from '@material-ui/core/Popper';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import theme from '../../theme/theme';
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
-        backgroundColor: '#fbfbfb',
+        backgroundColor: theme.palette.background.default,
     },
     toolbar: {
-        paddingRight: 24, // keep right padding when drawer closed
+        justifyContent: 'space-between',
     },
     toolbarIcon: {
         display: 'flex',
@@ -37,13 +52,30 @@ const useStyles = makeStyles((theme) => ({
         padding: '0 8px',
         ...theme.mixins.toolbar,
     },
+    tab: {
+        minHeight: theme.spacing(7),
+        flexDirection: 'row',
+        alignItems: 'center',
+        '&> .MuiSvgIcon-root': {
+            marginRight: theme.spacing(1),
+            marginBottom: '0 !important',
+        },
+    },
+    tabSelected: {
+        '& .MuiSvgIcon-root': {
+            fill: theme.palette.secondary.main,
+        },
+    },
+    tabsIndicator: {
+        borderTopRightRadius: '4px',
+        height: '4px',
+        borderTopLeftRadius: '4px',
+    },
     appBar: {
-        background: theme.palette.background,
+        background: theme.palette.background.paper,
         zIndex: theme.zIndex.drawer + 1,
-        transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
+        borderBottom: `1px solid ${theme.palette.grey[100]}`,
+        color: theme.palette.text.primary,
     },
     appBarShift: {
         marginLeft: drawerWidth,
@@ -58,9 +90,6 @@ const useStyles = makeStyles((theme) => ({
     },
     menuButtonHidden: {
         display: 'none',
-    },
-    title: {
-        flexGrow: 1,
     },
     drawerPaper: {
         position: 'relative',
@@ -100,55 +129,186 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function Dashboard({ children, pathName }) {
+export default function Dashboard({ children, pathName = '', currentUser }) {
     const classes = useStyles();
     const [open, setOpen] = React.useState(false);
-    const handleDrawerOpen = () => {
-        setOpen(true);
+    const anchorRef = React.useRef(null);
+
+    const paths = pathName.split('/').filter((x) => x);
+    let initialVal = 'roles';
+    if (paths[0] === 'scripts') {
+        initialVal = paths[0];
+    }
+    const [currentTab, setCurrentTab] = React.useState(initialVal);
+
+    // update tab if pathname changes
+    useEffect(() => {
+        const paths = pathName.split('/').filter((x) => x);
+        if (
+            (paths[0] === 'scripts' || paths[0] === 'roles') &&
+            paths[0] !== currentTab
+        ) {
+            setCurrentTab(paths[0]);
+        }
+    }, [pathName]);
+
+    const handleTabClicked = (e, val) => {
+        e.preventDefault();
+        setCurrentTab(val);
+        Router.push(`/${val}`, `/${val}`);
     };
-    const handleDrawerClose = () => {
+
+    const handleToggleMenu = () => {
+        setOpen((prevOpen) => !prevOpen);
+    };
+
+    const handleClose = (event) => {
+        if (anchorRef.current && anchorRef.current.contains(event.target)) {
+            return;
+        }
+
         setOpen(false);
     };
-    const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+
+    const handleLogoutClicked = (e) => {
+        e.preventDefault();
+        handleClose(e);
+        Router.push('/signout', '/signout');
+    };
+
+    function handleListKeyDown(event) {
+        if (event.key === 'Tab') {
+            event.preventDefault();
+            setOpen(false);
+        }
+    }
+
+    // return focus to the button when we transitioned from !open -> open
+    const prevOpen = React.useRef(open);
+    React.useEffect(() => {
+        if (prevOpen.current === true && open === false) {
+            anchorRef.current.focus();
+        }
+
+        prevOpen.current = open;
+    }, [open]);
 
     return (
         <div className={classes.root}>
             <CssBaseline />
             <AppBar
                 position="absolute"
-                className={clsx(classes.appBar, open && classes.appBarShift)}
+                elevation={0}
+                className={classes.appBar}
             >
                 <Toolbar className={classes.toolbar}>
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={handleDrawerOpen}
-                        className={clsx(
-                            classes.menuButton,
-                            open && classes.menuButtonHidden,
-                        )}
-                    >
-                        <MenuIcon />
-                    </IconButton>
                     <Typography
                         component="h1"
                         variant="h6"
-                        color="inherit"
+                        color="primary"
+                        wei
                         noWrap
-                        className={classes.title}
                     >
-                        Dashboard
+                        <b>intra</b>
                     </Typography>
-                    <IconButton color="inherit">
-                        <Badge badgeContent={4} color="secondary">
-                            <NotificationsIcon />
-                        </Badge>
+                    <Tabs
+                        indicatorColor="secondary"
+                        centered
+                        value={currentTab}
+                        onChange={handleTabClicked}
+                        classes={{
+                            indicator: classes.tabsIndicator,
+                        }}
+                    >
+                        <Tab
+                            label="Roles"
+                            value="roles"
+                            icon={<AssignmentIndIcon />}
+                            classes={{
+                                wrapper: classes.tab,
+
+                                selected: classes.tabSelected,
+                            }}
+                        />
+                        <Tab
+                            label="Scripts"
+                            value="scripts"
+                            icon={<AssignmentIcon />}
+                            classes={{
+                                wrapper: classes.tab,
+                                selected: classes.tabSelected,
+                            }}
+                        />
+                        <Tab
+                            label="Candidates"
+                            value="candidates"
+                            icon={<GroupIcon />}
+                            classes={{
+                                wrapper: classes.tab,
+                                selected: classes.tabSelected,
+                            }}
+                        />
+                    </Tabs>
+                    <IconButton
+                        aria-label="menu"
+                        ref={anchorRef}
+                        aria-controls={open ? 'menu-list-grow' : undefined}
+                        aria-haspopup="true"
+                        onClick={handleToggleMenu}
+                    >
+                        <Avatar
+                            alt={currentUser.name}
+                            sizes="medium"
+                            src={getGravatar(currentUser.email, 50)}
+                        />
                     </IconButton>
+                    <Popper
+                        open={open}
+                        anchorEl={anchorRef.current}
+                        role={undefined}
+                        transition
+                        disablePortal
+                    >
+                        {({ TransitionProps, placement }) => (
+                            <Grow
+                                {...TransitionProps}
+                                style={{
+                                    transformOrigin:
+                                        placement === 'bottom'
+                                            ? 'center top'
+                                            : 'center bottom',
+                                }}
+                            >
+                                <Paper>
+                                    <ClickAwayListener
+                                        onClickAway={handleClose}
+                                    >
+                                        <MenuList
+                                            autoFocusItem={open}
+                                            id="menu-list-grow"
+                                            onKeyDown={handleListKeyDown}
+                                        >
+                                            <MenuItem onClick={handleClose}>
+                                                Profile
+                                            </MenuItem>
+                                            <MenuItem onClick={handleClose}>
+                                                My account
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={handleLogoutClicked}
+                                            >
+                                                Logout
+                                            </MenuItem>
+                                        </MenuList>
+                                    </ClickAwayListener>
+                                </Paper>
+                            </Grow>
+                        )}
+                    </Popper>
                 </Toolbar>
             </AppBar>
 
-            <Drawer
+            {/* <Drawer
                 variant="permanent"
                 classes={{
                     paper: clsx(
@@ -167,7 +327,7 @@ export default function Dashboard({ children, pathName }) {
                 <List>{mainListItems}</List>
                 <Divider />
                 <List>{secondaryListItems}</List>
-            </Drawer>
+            </Drawer> */}
 
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />

@@ -30,7 +30,11 @@ const AppComponent = ({ Component, pageProps, currentUser, pathName }) => {
             return component;
         }
 
-        return <Dashboard pathName={pathName}>{component}</Dashboard>;
+        return (
+            <Dashboard currentUser={currentUser} pathName={pathName}>
+                {component}
+            </Dashboard>
+        );
     };
 
     return (

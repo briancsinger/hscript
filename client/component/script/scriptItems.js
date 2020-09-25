@@ -1,27 +1,36 @@
+import Typography from '@material-ui/core/Typography';
+import Link from '@material-ui/core/Link';
+import Box from '@material-ui/core/Box';
+
 const ScriptItems = ({ items = [] }) => {
-    const renderLinkItem = (item, index) => (
-        <p>
-            <a href={item.url} target="_blank" referrer="self">
-                {item.url}
-            </a>
-        </p>
+    const renderQuestionItem = (item, index) => (
+        <Typography variant="body1" color="primary">
+            {item.text}
+        </Typography>
     );
+
+    const renderTextItem = (item, index) => {
+        return <Typography variant="body1">{item.text}</Typography>;
+    };
 
     const renderItem = (item, index) => {
         switch (item.type) {
             case 'question':
+                return renderQuestionItem(item, index);
             case 'text':
-                return <p>{item.text}</p>;
+                return renderTextItem(item, index);
             default:
                 return;
         }
     };
 
     const itemsList = items.map((item, index) => (
-        <div key={index}>{renderItem(item, index)}</div>
+        <Box key={index} mb={3}>
+            {renderItem(item, index)}
+        </Box>
     ));
 
-    return <div>{itemsList}</div>;
+    return itemsList;
 };
 
 export default ScriptItems;

@@ -9,6 +9,7 @@ import { createRoleRouter } from './routes/roles/new';
 import { getRolesRouter } from './routes/roles/list';
 import { getRoleRouter } from './routes/roles/show';
 import { updateRoleRouter } from './routes/roles/update';
+import { getScriptsForRoleRouter } from './routes/scripts/list-for-role';
 import { getScriptsRouter } from './routes/scripts/list';
 import { createScriptRouter } from './routes/scripts/new';
 import { getScriptRouter } from './routes/scripts/show';
@@ -28,6 +29,7 @@ app.use(
 app.use(currentUser);
 
 app.use(getScriptsRouter);
+app.use(getScriptsForRoleRouter);
 app.use(getScriptRouter);
 app.use(createScriptRouter);
 app.use(updateScriptRouter);
