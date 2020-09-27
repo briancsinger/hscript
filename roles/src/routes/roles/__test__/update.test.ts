@@ -8,8 +8,12 @@ import { User } from '../../../models/user';
 it('returns a 404 if the provided id does not exist', async () => {
     const id = new mongoose.Types.ObjectId().toHexString();
 
-    const response = await request(app).put(`/api/roles/${id}`).send({});
-    expect(response.status).not.toEqual(404);
+    const response = await request(app)
+        .put(`/api/roles/${id}`)
+        .set('Cookie', global.signin())
+        .send({ name: 'Role', descriptionItems: [] });
+
+    expect(response.status).toEqual(404);
 });
 
 it('returns a 401 if the user is not signed in', async () => {
