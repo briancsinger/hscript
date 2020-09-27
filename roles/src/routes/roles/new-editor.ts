@@ -31,7 +31,6 @@ router.post(
         const userId = req.currentUser!.id;
 
         const role = await Role.findById(req.params.id);
-
         if (!role) {
             throw new NotFoundError();
         }
