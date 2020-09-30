@@ -31,14 +31,14 @@ const SkillsInput = ({ initialSkills = [], onChange }) => {
     const classes = useStyles();
     const [skills, setSkills] = useState([
         ...initialSkills,
-        { text: '', id: getRandomUniqueId(initialSkills), new: true },
+        { text: '', _id: getRandomUniqueId(initialSkills), new: true },
     ]);
 
     const handleSkillChange = (skill, e) => {
         e.preventDefault();
 
         const updatedSkills = skills.map((s) => {
-            if (s.id === skill.id) {
+            if (s._id === skill._id) {
                 const updatedSkill = {
                     ...skill,
                     text: e.target.value,
@@ -70,7 +70,7 @@ const SkillsInput = ({ initialSkills = [], onChange }) => {
         if ((updatedSkills.slice(-1).pop() || {}).text) {
             updatedSkills.push({
                 text: '',
-                id: getRandomUniqueId(initialSkills),
+                _id: getRandomUniqueId(initialSkills),
                 new: true,
             });
         }
@@ -110,7 +110,7 @@ const SkillsInput = ({ initialSkills = [], onChange }) => {
             if ((updatedSkills.slice(-1).pop() || {}).text) {
                 updatedSkills.push({
                     text: '',
-                    id: getRandomUniqueId(initialSkills),
+                    _id: getRandomUniqueId(initialSkills),
                     new: true,
                 });
             }
@@ -121,11 +121,12 @@ const SkillsInput = ({ initialSkills = [], onChange }) => {
     );
 
     const skillsList = () => {
+        console.log({ skills });
         return (
             <Grid container direction="column" spacing={1}>
                 {skills.map((skill, index) => (
                     <SkillListItem
-                        key={skill.id}
+                        key={skill._id}
                         skill={skill}
                         index={index}
                         placeholder={

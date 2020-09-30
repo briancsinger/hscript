@@ -206,7 +206,6 @@ export default function Dashboard({ children, pathName = '', currentUser }) {
                         component="h1"
                         variant="h6"
                         color="primary"
-                        wei
                         noWrap
                     >
                         <b>intra</b>

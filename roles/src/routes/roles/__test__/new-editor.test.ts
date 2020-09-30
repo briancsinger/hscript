@@ -36,7 +36,7 @@ const buildUser = async ({
     return user;
 };
 
-it.only('returns a 404 if the provided id does not exist', async () => {
+it('returns a 404 if the provided id does not exist', async () => {
     const id = new mongoose.Types.ObjectId().toHexString();
 
     const response = await request(app)
@@ -74,9 +74,6 @@ it('returns a 401 if the user does not own the role and is not an editor', async
             email: 'test@test.co',
         })
         .expect(401);
-
-    let roleCheck = await Role.findById(role._id);
-    expect(roleCheck!.name).toEqual(role.name);
 });
 
 it('returns a 400 if the email provided is invalid', async () => {

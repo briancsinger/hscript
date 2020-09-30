@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 
-interface SkillDoc extends mongoose.Document {
+interface SkillSubDoc extends mongoose.Document {
     text: string;
 }
 
-const SkillSchema = new mongoose.Schema(
+const SkillSubSchema = new mongoose.Schema(
     {
         text: {
             type: String,
@@ -21,4 +21,4 @@ const SkillSchema = new mongoose.Schema(
     },
 );
 
-export { SkillDoc, SkillSchema };
+export { SkillSubDoc, SkillSubSchema };

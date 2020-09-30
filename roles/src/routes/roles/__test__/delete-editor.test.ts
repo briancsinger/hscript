@@ -71,9 +71,6 @@ it('returns a 401 if the user does not own the role and is not an editor', async
         .delete(`/api/roles/${id}/editors/${editorId}`)
         .set('Cookie', global.signin())
         .expect(401);
-
-    let roleCheck = await Role.findById(role._id);
-    expect(roleCheck!.name).toEqual(role.name);
 });
 
 it('returns a 404 if the editor is not found on the role and the user owns the role', async () => {

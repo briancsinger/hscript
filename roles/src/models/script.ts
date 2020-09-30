@@ -3,7 +3,6 @@ import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 import { ScriptItems } from '@bsnpm/common';
 
-import { SkillSchema, SkillDoc } from './subdocuments/skill';
 import { QuestionDoc, QuestionSchema } from './subdocuments/question';
 
 // enum ScriptItemType {

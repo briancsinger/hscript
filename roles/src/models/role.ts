@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
-import { SkillSchema, SkillDoc } from './subdocuments/skill';
+import { SkillSubSchema, SkillSubDoc } from './subdocuments/skillSub';
 import { QuestionDoc, QuestionSchema } from './subdocuments/question';
 import { UserDoc } from './user';
 
@@ -23,7 +23,7 @@ interface RoleDescriptionText {
 interface RoleDescriptionItems
     extends Array<RoleDescriptionLink | RoleDescriptionText> {}
 
-interface SkillArray extends Array<SkillDoc> {}
+interface SkillArray extends Array<SkillSubDoc> {}
 
 interface QuestionArray extends Array<QuestionDoc> {}
 
@@ -31,7 +31,14 @@ interface RoleAttrs {
     createdBy: string;
     descriptionItems?: RoleDescriptionItems;
     name: string;
-    skills?: SkillArray;
+    skills?: [
+        {
+            skillId?: string;
+            text?: string;
+            organizationId?: string;
+            createdBy?: string;
+        },
+    ];
     questions?: QuestionArray;
 }
 
@@ -40,7 +47,14 @@ interface RoleDocBase extends mongoose.Document {
     descriptionItems: RoleDescriptionItems;
     name: string;
     version: number;
-    skills?: SkillArray;
+    skills?: [
+        {
+            skillId?: string;
+            text?: string;
+            organizationId?: string;
+            createdBy?: string;
+        },
+    ];
     questions?: QuestionArray;
     editors: Array<string>;
 }
@@ -65,7 +79,26 @@ const RoleSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        skills: [SkillSchema],
+        skills: [
+            {
+                skillId: {
+                    type: String,
+                    required: false,
+                },
+                text: {
+                    type: String,
+                    required: true,
+                },
+                organizationId: {
+                    type: String,
+                    required: false,
+                },
+                createdBy: {
+                    type: String,
+                    required: false,
+                },
+            },
+        ],
         questions: [QuestionSchema],
         editors: [
             {
