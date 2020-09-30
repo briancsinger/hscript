@@ -28,10 +28,6 @@ router.post(
             .optional()
             .custom((items) => Array.isArray(items))
             .withMessage('Questions must be an array'),
-        body('skills')
-            .optional()
-            .custom((items) => Array.isArray(items))
-            .withMessage('Skills must be an array'),
         body('descriptionItems')
             .optional()
             .custom((items) => Array.isArray(items))
@@ -54,7 +50,7 @@ router.post(
     ],
     validateRequest,
     async (req: Request, res: Response) => {
-        const { name, descriptionItems, skills, questions } = req.body;
+        const { name, descriptionItems, questions } = req.body;
         const userId = req.currentUser!.id;
 
         // build role
@@ -62,7 +58,6 @@ router.post(
             createdBy: userId,
             name,
             descriptionItems,
-            skills,
             questions,
         });
         await role.save();

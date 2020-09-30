@@ -109,18 +109,6 @@ it('returns an error if invalid descriptionItems is provided', async () => {
         .expect(400);
 });
 
-it('returns an error if invalid skills is provided', async () => {
-    // desriptionItems not an array
-    await request(app)
-        .post('/api/roles')
-        .set('Cookie', global.signin())
-        .send({
-            name: 'Role',
-            skills: 'blahblah',
-        })
-        .expect(400);
-});
-
 it('returns an error if invalid questions is provided', async () => {
     // desriptionItems not an array
     await request(app)
@@ -139,7 +127,6 @@ it('creates a role with valid paramaters', async () => {
         { type: RoleDescriptionType.Link, url: 'https://google.com' },
         { type: RoleDescriptionType.Text, text: 'blah blah' },
     ];
-    const skills = [{ text: 'skill1' }];
     const questions = [{ text: 'question1' }];
 
     const mockUserId = mongoose.Types.ObjectId().toHexString();
@@ -160,7 +147,6 @@ it('creates a role with valid paramaters', async () => {
         .send({
             name,
             descriptionItems,
-            skills,
             questions,
         })
         .expect(201);
@@ -171,12 +157,12 @@ it('creates a role with valid paramaters', async () => {
     expect(body.descriptionItems[0].type).toEqual(descriptionItems[0].type);
     expect(body.name).toEqual(name);
     expect(body.createdBy).toEqual(mockUserId);
-    expect(body.skills![0].text).toEqual(skills[0].text);
+    expect(body.skills).toHaveLength(0);
     expect(body.questions![0].text).toEqual(questions[0].text);
     expect(roles[0].descriptionItems[0].type).toEqual(descriptionItems[0].type);
     expect(roles[0].name).toEqual(name);
     expect(String(roles[0].createdBy)).toEqual(mockUserId);
-    expect(roles[0].skills![0].text).toEqual(skills[0].text);
+    expect(roles[0].skills).toHaveLength(0);
     expect(roles[0].questions![0].text).toEqual(questions[0].text);
 });
 

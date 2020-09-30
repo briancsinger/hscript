@@ -16,6 +16,8 @@ import { getScriptRouter } from './routes/scripts/show';
 import { updateScriptRouter } from './routes/scripts/update';
 import { addRoleEditorRoute } from './routes/roles/new-editor';
 import { removeRoleEditorRoute } from './routes/roles/delete-editor';
+import { addRoleSkillRoute } from './routes/roles/new-skill';
+import { removeRoleSkillRoute } from './routes/roles/delete-skill';
 
 const app = express();
 app.set('trust proxy', true);
@@ -40,6 +42,8 @@ app.use(getRoleRouter);
 app.use(updateRoleRouter);
 app.use(addRoleEditorRoute);
 app.use(removeRoleEditorRoute);
+app.use(addRoleSkillRoute);
+app.use(removeRoleSkillRoute);
 
 app.all('*', async (req, res) => {
     throw new NotFoundError();

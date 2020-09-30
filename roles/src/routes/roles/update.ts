@@ -1,5 +1,7 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
+import { difference } from 'lodash';
+import { keyBy } from 'lodash/fp';
 
 import {
     requireAuth,
@@ -9,6 +11,7 @@ import {
     BadRequestError,
 } from '@bsnpm/common';
 import { Role, RoleDescriptionType } from '../../models/role';
+import { SkillSubDoc } from '../../models/subdocuments/skillSub';
 
 const router = express.Router();
 
@@ -89,16 +92,56 @@ router.put(
             throw new NotAuthorizedError();
         }
 
+        if (skills && skills.length) {
+            // make sure user isn't added new skill here
+            if (role.skills) {
+                const existingSkillIds = role.skills
+                    .filter((skill: any) => skill && skill._id)
+                    .map((skill: any) => String(skill._id));
+
+                const updatedSkillIds = skills
+                    .filter((skill: any) => skill && skill._id)
+                    .map((skill: any) => String(skill._id));
+
+                if (difference(updatedSkillIds, existingSkillIds).length) {
+                    throw new BadRequestError(
+                        'Please use new skills endpoint to add skills to role',
+                    );
+                }
+                // create a new skill set to be sure that we're not updating the skills here
+                // users are only allowed to reorder them in this endpoint
+                const existingSkills = keyBy((s) => s.skillId, role.skills);
+                const updatedSkills = skills.reduce(
+                    (accum: any, skill: any) => {
+                        if (
+                            skill &&
+                            skill.skillId &&
+                            existingSkills[skill.skillId]
+                        ) {
+                            const existingSkill: any =
+                                existingSkills[skill.skillId];
+                            accum.push({
+                                _id: existingSkill._id,
+                                skillId: existingSkill.skillId,
+                                text: existingSkill.text,
+                                createdBy: existingSkill.createdBy,
+                                organizationId: existingSkill.organizationId,
+                            });
+                        }
+                        return accum;
+                    },
+                    [],
+                );
+                role.set({ skills: updatedSkills });
+            }
+        }
+
         if (name) {
             role.set({ name });
         }
 
         if (descriptionItems) {
             role.set({ descriptionItems });
-        }
-
-        if (skills) {
-            role.set({ skills });
         }
 
         if (questions) {
