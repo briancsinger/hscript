@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { body } from 'express-validator';
+import { body, check, oneOf, validationResult } from 'express-validator';
 
 import {
     requireAuth,
@@ -21,16 +21,20 @@ router.post(
     '/api/roles/:id/skills',
     requireAuth,
     [
-        body('text')
-            .optional()
-            .trim()
-            .isString()
-            .withMessage('Skills text must be a string'),
-        body('skillId')
-            .optional()
-            .trim()
-            .isString()
-            .withMessage('Skills text must be a string'),
+        oneOf([
+            body('text')
+                .isString()
+                .trim()
+                .not()
+                .isEmpty()
+                .withMessage('Skills text must be a string'),
+            body('skillId')
+                .isString()
+                .trim()
+                .not()
+                .isEmpty()
+                .withMessage('Skills text must be a string'),
+        ]),
     ],
     validateRequest,
     async (req: Request, res: Response) => {

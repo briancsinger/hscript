@@ -18,6 +18,7 @@ import { addRoleEditorRoute } from './routes/roles/new-editor';
 import { removeRoleEditorRoute } from './routes/roles/delete-editor';
 import { addRoleSkillRoute } from './routes/roles/new-skill';
 import { removeRoleSkillRoute } from './routes/roles/delete-skill';
+import { updateRoleSkillRoute } from './routes/roles/update-skill';
 
 const app = express();
 app.set('trust proxy', true);
@@ -44,6 +45,7 @@ app.use(addRoleEditorRoute);
 app.use(removeRoleEditorRoute);
 app.use(addRoleSkillRoute);
 app.use(removeRoleSkillRoute);
+app.use(updateRoleSkillRoute);
 
 app.all('*', async (req, res) => {
     throw new NotFoundError();
