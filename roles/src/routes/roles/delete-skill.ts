@@ -33,8 +33,9 @@ router.delete(
 
         if (
             role.skills &&
-            // @ts-ignore
-            !role.skills.filter((skill) => String(skill._id) === skillId)[0]
+            !role.skills.filter(
+                (skill: any) => String(skill._id) === skillId,
+            )[0]
         ) {
             throw new NotFoundError();
         }
@@ -48,18 +49,18 @@ router.delete(
 
         if (role.skills && role.skills.length) {
             const deletedSkill = role.skills.filter(
-                // @ts-ignore
-                (skill) => String(skill._id) === skillId,
+                (skill: any) => String(skill._id) === skillId,
             )[0];
 
-            const updatedSkills = role.skills.reduce((accum, skill) => {
-                // @ts-ignore
-                if (skill && String(skill._id) !== skillId) {
-                    // @ts-ignore
-                    accum.push(skill);
-                }
-                return accum;
-            }, []);
+            const updatedSkills = role.skills.reduce(
+                (accum: any[], skill: any) => {
+                    if (skill && String(skill._id) !== skillId) {
+                        accum.push(skill);
+                    }
+                    return accum;
+                },
+                [],
+            );
 
             role.set({ skills: updatedSkills });
             await role.save();

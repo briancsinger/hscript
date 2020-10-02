@@ -38,8 +38,28 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up('sm')]: {
             padding: theme.spacing(4),
         },
+        // [theme.breakpoints.up('md')]: {
+        //     padding: theme.spacing(6),
+        // },
+    },
+    skillsBoxWrapper: {
+        [theme.breakpoints.up('xs')]: {
+            paddingTop: theme.spacing(1),
+            paddingBottom: theme.spacing(1),
+            // paddingRight: theme.spacing(1),
+            // paddingLeft: theme.spacing(1),
+        },
+        [theme.breakpoints.up('sm')]: {
+            paddingTop: theme.spacing(2),
+            paddingBottom: theme.spacing(2),
+            // paddingRight: theme.spacing(2),
+            // paddingLeft: theme.spacing(2),
+        },
         [theme.breakpoints.up('md')]: {
-            padding: theme.spacing(6),
+            paddingTop: theme.spacing(3),
+            paddingBottom: theme.spacing(3),
+            // paddingRight: theme.spacing(3),
+            // paddingLeft: theme.spacing(3),
         },
     },
     editorTextField: {
@@ -88,6 +108,29 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
         onSuccess: (script) => {
             setDeleteEditorId();
             Router.push('/roles/[roleId]', `/roles/${role.id}`);
+        },
+    });
+
+    const {
+        doRequest: deleteSkillRequest,
+        errors: deleteSkillRequestErrors,
+    } = useRequest({
+        method: 'delete',
+        onSuccess: (role) => {
+            Router.push('/roles/[roleId]', `/roles/${role.id}`);
+            setSkills(role.skills);
+        },
+    });
+
+    const {
+        doRequest: addSkillRequest,
+        errors: addSkillRequestErrors,
+    } = useRequest({
+        url: `/api/roles/${role.id}/skills`,
+        method: 'post',
+        onSuccess: (role) => {
+            Router.push('/roles/[roleId]', `/roles/${role.id}`);
+            setSkills(role.skills);
         },
     });
 
@@ -187,6 +230,19 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
         setSkills(updatedSkills);
     };
 
+    const handleAddSkill = (skillText) => {
+        addSkillRequest({
+            text: skillText,
+        });
+    };
+
+    const handleDeleteSkill = (skillId) => {
+        console.log(skillId);
+        deleteSkillRequest({
+            url: `/api/roles/${role.id}/skills/${skillId}`,
+        });
+    };
+
     const handleQuestionsChange = (updatedQuestions) => {
         setQuestions(updatedQuestions);
     };
@@ -211,8 +267,10 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
 
     const skillList = (
         <SkillsInput
-            initialSkills={role.skills}
+            initialSkills={skills}
             onChange={handleSkillsChange}
+            onAddSkill={handleAddSkill}
+            onDeleteSkill={handleDeleteSkill}
         />
     );
 
@@ -335,8 +393,9 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
                             Skills:
                         </Typography>
                         <Paper>
-                            <Box className={classes.boxWrapper}>
-                                <div className="">{skillList}</div>
+                            <Box className={classes.skillsBoxWrapper}>
+                                {skillList}
+                                {addEditorRequestErrors}
                             </Box>
                         </Paper>
                     </Grid>

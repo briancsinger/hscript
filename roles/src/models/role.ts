@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
-import { SkillSubSchema, SkillSubDoc } from './subdocuments/skillSub';
+// import { SkillSubSchema, SkillSubDoc } from './subdocuments/skillSub';
 import { QuestionDoc, QuestionSchema } from './subdocuments/question';
 import { UserDoc } from './user';
 
@@ -23,7 +23,7 @@ interface RoleDescriptionText {
 interface RoleDescriptionItems
     extends Array<RoleDescriptionLink | RoleDescriptionText> {}
 
-interface SkillArray extends Array<SkillSubDoc> {}
+// interface SkillArray extends Array<SkillSubDoc> {}
 
 interface QuestionArray extends Array<QuestionDoc> {}
 
