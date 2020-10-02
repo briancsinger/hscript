@@ -215,7 +215,6 @@ describe('when user passes existing skill id', () => {
             .post(`/api/roles/${myRole1.id}/skills`)
             .set('Cookie', cookie)
             .send({
-                text: skill.text,
                 skillId: String(skill.id),
             })
             .expect(200);
@@ -255,8 +254,8 @@ describe('when user passes existing skill id', () => {
                 .post(`/api/roles/${myRole1.id}/skills`)
                 .set('Cookie', cookie)
                 .send({
-                    text: skillText,
                     skillId: String(skillId),
+                    text: skillText,
                 })
                 .expect(200);
 
