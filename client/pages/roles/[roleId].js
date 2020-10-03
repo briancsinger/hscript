@@ -123,6 +123,17 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
     });
 
     const {
+        doRequest: updateSkillRequest,
+        errors: updateSkillRequestErrors,
+    } = useRequest({
+        method: 'put',
+        onSuccess: (role) => {
+            Router.push('/roles/[roleId]', `/roles/${role.id}`);
+            setSkills(role.skills);
+        },
+    });
+
+    const {
         doRequest: addSkillRequest,
         errors: addSkillRequestErrors,
     } = useRequest({
@@ -226,7 +237,14 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
         updateRoleRequest({ descriptionItems: updatedDescriptionItems });
     };
 
-    const handleSkillsChange = (updatedSkills) => {
+    const handleUpdateSkill = (updatedSkill, text) => {
+        updateSkillRequest({
+            url: `/api/roles/${role.id}/skills/${updatedSkill._id}`,
+            text,
+        });
+    };
+
+    const handleMoveSkill = (updatedSkills) => {
         setSkills(updatedSkills);
     };
 
@@ -237,7 +255,6 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
     };
 
     const handleDeleteSkill = (skillId) => {
-        console.log(skillId);
         deleteSkillRequest({
             url: `/api/roles/${role.id}/skills/${skillId}`,
         });
@@ -268,7 +285,8 @@ const RoleShow = ({ currentUser, role, scripts, pathName }) => {
     const skillList = (
         <SkillsInput
             initialSkills={skills}
-            onChange={handleSkillsChange}
+            onUpdateSkill={handleUpdateSkill}
+            onMoveSkill={handleMoveSkill}
             onAddSkill={handleAddSkill}
             onDeleteSkill={handleDeleteSkill}
         />

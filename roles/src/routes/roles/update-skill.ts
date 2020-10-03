@@ -68,7 +68,7 @@ router.put(
                         accum.push(skill);
                     } else {
                         accum.push({
-                            skillId: skill.id,
+                            skillId: skill.skillId,
                             text,
                             createdBy: skill.createdBy,
                             organizationId: skill.organizationId,

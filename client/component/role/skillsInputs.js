@@ -49,7 +49,8 @@ const useStyles = makeStyles((theme) => ({
 
 const SkillsInput = ({
     initialSkills = [],
-    onChange,
+    onUpdateSkill,
+    onMoveSkill,
     onAddSkill,
     onDeleteSkill,
 }) => {
@@ -75,32 +76,20 @@ const SkillsInput = ({
         setNewSkill(e.target.value);
     };
 
-    const handleSkillChange = (skill, e) => {
-        e.preventDefault();
-
+    const handleSkillChange = (skill, text) => {
         const updatedSkills = skills.map((s) => {
             if (s._id === skill._id) {
                 const updatedSkill = {
                     ...skill,
-                    text: e.target.value,
+                    text,
                 };
                 return updatedSkill;
             }
             return s;
         });
 
-        if (onChange) {
-            // let skillsToSave = updatedSkills.map((skill) => {
-            //     if (skill.new) {
-            //         return {
-            //             text: skill.text,
-            //         };
-            //     }
-
-            //     return skill;
-            // });
-
-            onChange(updatedSkills);
+        if (onUpdateSkill) {
+            onUpdateSkill(skill, text);
         }
 
         setSkills(updatedSkills);
@@ -116,23 +105,8 @@ const SkillsInput = ({
                 ],
             });
 
-            if (onChange) {
-                // let skillsToSave = updatedSkills.map((skill) => {
-                //     if (skill.new) {
-                //         return {
-                //             text: skill.text,
-                //         };
-                //     }
-
-                //     return skill;
-                // });
-
-                // // don't save an empty last skill
-                // if (!(skillsToSave.slice(-1).pop() || {}).text) {
-                //     skillsToSave.pop();
-                // }
-
-                onChange(updatedSkills);
+            if (onMoveSkill) {
+                onMoveSkill(updatedSkills);
             }
 
             setSkills(updatedSkills);
@@ -141,7 +115,6 @@ const SkillsInput = ({
     );
 
     const skillsList = () => {
-        console.log({ skills });
         return (
             <>
                 <List>
