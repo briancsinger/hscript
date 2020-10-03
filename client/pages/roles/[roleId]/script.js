@@ -139,7 +139,6 @@ const NewScript = ({ currentUser, role = {}, pathName }) => {
 NewScript.getInitialProps = async (context, client) => {
     const { roleId } = context.query;
     const { pathname: pathName } = context;
-    console.log(context);
 
     try {
         const { data: role } = await client.get(`/api/roles/${roleId}`);

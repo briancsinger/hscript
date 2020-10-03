@@ -81,6 +81,7 @@ const SkillListItem = ({
     const ref = useRef(null);
     const classes = useStyles();
     const [isEditing, setIsEditing] = useState(false);
+    const [updatedSkillText, setUpdatedSkillText] = useState(skill.text);
 
     const [, drop] = useDrop({
         accept: SKILL_TYPE,
@@ -143,22 +144,35 @@ const SkillListItem = ({
     const handleDeleteClicked = (e) => {
         e.preventDefault();
         if (onDeleteSkill) {
-            console.log(skill._id);
             onDeleteSkill(skill._id);
         }
     };
 
     const handleItemClick = (e) => {
         e.preventDefault();
-        console.log('1111');
         setIsEditing(true);
     };
 
     const handleCancelClicked = (e) => {
         e.preventDefault();
-        console.log('asd');
         setIsEditing(false);
     };
+
+    const handleSaveClicked = (e) => {
+        e.preventDefault();
+        setIsEditing(false);
+        if (handleSkillChange) {
+            handleSkillChange(skill, updatedSkillText);
+        }
+    };
+
+    const handleSkillTextChanged = (e) => {
+        e.preventDefault();
+        setUpdatedSkillText(e.target.value);
+    };
+
+    const updateButtonDisabled =
+        skill.text === updatedSkillText || !updatedSkillText;
 
     return (
         <ListItem
@@ -182,13 +196,18 @@ const SkillListItem = ({
                                 fullWidth
                                 variant="outlined"
                                 placeholder={placeholder}
-                                value={skill.text}
-                                onChange={handleSkillChange.bind(this, skill)}
+                                value={updatedSkillText}
+                                onChange={handleSkillTextChanged}
                             />
                         </Grid>
                         <Grid item container spacing={1}>
                             <Grid item>
-                                <Button variant="contained" color="secondary">
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    disabled={updateButtonDisabled}
+                                    onClick={handleSaveClicked}
+                                >
                                     Update
                                 </Button>
                             </Grid>
